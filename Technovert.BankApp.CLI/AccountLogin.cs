@@ -21,7 +21,7 @@ namespace Technovert.BankApp.CLI
             if (response)
             {
                 Printer printer = new Printer();
-                printer.ResponsePrinter("");
+                printer.ResponsePrinter("Logged into Account");
                 LoginOptions options = new LoginOptions(); 
                 string choosenOption = options.AvailableOptions();
                 LoginOptionsChooser choice = new LoginOptionsChooser();

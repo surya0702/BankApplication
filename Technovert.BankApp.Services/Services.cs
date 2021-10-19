@@ -79,20 +79,11 @@ namespace Technovert.BankApp.Services
             this.banks.Add(newBank);
             return newBank.Id;
         }
-
-<<<<<<< HEAD
-        public void CreateAccount(string accountHolderName, string bankId, string password)
-        {
-            Account account = new Account()
-            {
-                Name= accountHolderName,
-=======
         public void CreateAccount(string bankName, string accountHolderName, string password)
         {
             Account account = new Account()
             {
                 Name=accountHolderName,
->>>>>>> master
                 Id = AccountIdGenerator(accountHolderName),
                 Password = password,
                 Balance = 0,

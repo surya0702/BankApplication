@@ -18,4 +18,3 @@ C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\obj\Debug\
 C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\obj\Debug\net5.0\ref\Technovert.BankApp.CLI.dll
 C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\obj\Debug\net5.0\Technovert.BankApp.CLI.pdb
 C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\obj\Debug\net5.0\Technovert.BankApp.CLI.genruntimeconfig.cache
-C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\obj\Debug\net5.0\Technovert.BankApp.CLI.csproj.CopyComplete

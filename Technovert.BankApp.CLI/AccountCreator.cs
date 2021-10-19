@@ -17,11 +17,7 @@ namespace Technovert.BankApp.CLI
             accountName = Console.ReadLine();
             Console.Write("To setup your account, Please enter a password : ");
             password = Console.ReadLine();
-<<<<<<< HEAD
-            service.CreateAccount(name,bankId,password);// Account Created
-=======
             service.CreateAccount(bankName,accountName,password);// Account Created
->>>>>>> master
             Console.WriteLine("\nAccount Created".ToUpper());
             LoginOptions options = new LoginOptions();
             string choosenOption = options.AvailableOptions(); // Displays the Main menu

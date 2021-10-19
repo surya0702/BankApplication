@@ -52,6 +52,7 @@ namespace Technovert.BankApp.CLI
                             string bankName;
                             Console.Write("Enter your Bank Name : ");
                             bankName = Console.ReadLine();
+                            service.CreateBank(bankName);
                             AccountLogger accountLogger = new AccountLogger();
                             accountLogger.Logger(bankName, service);
                             break;

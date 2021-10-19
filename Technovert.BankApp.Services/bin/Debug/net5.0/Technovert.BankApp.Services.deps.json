@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "Technovert.BankApp.Services/1.0.0": {
+        "dependencies": {
+          "Technovert.BankApp.Models": "1.0.0"
+        },
+        "runtime": {
+          "Technovert.BankApp.Services.dll": {}
+        }
+      },
+      "Technovert.BankApp.Models/1.0.0": {
+        "runtime": {
+          "Technovert.BankApp.Models.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Technovert.BankApp.Services/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Technovert.BankApp.Models/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

@@ -1,0 +1,12 @@
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\bin\Debug\net5.0\Technovert.BankApp.Models.deps.json
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\bin\Debug\net5.0\Technovert.BankApp.Models.dll
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\bin\Debug\net5.0\ref\Technovert.BankApp.Models.dll
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\bin\Debug\net5.0\Technovert.BankApp.Models.pdb
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\obj\Debug\net5.0\Technovert.BankApp.Models.csproj.AssemblyReference.cache
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\obj\Debug\net5.0\Technovert.BankApp.Models.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\obj\Debug\net5.0\Technovert.BankApp.Models.AssemblyInfoInputs.cache
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\obj\Debug\net5.0\Technovert.BankApp.Models.AssemblyInfo.cs
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\obj\Debug\net5.0\Technovert.BankApp.Models.csproj.CoreCompileInputs.cache
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\obj\Debug\net5.0\Technovert.BankApp.Models.dll
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\obj\Debug\net5.0\ref\Technovert.BankApp.Models.dll
+C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Models\obj\Debug\net5.0\Technovert.BankApp.Models.pdb

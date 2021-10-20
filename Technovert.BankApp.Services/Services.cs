@@ -72,6 +72,7 @@ namespace Technovert.BankApp.Services
         {
             string currentBankId = BankIdGenerator(bankName);
             Bank currentBank = BankFinder(currentBankId);
+
             if (currentBank != null)
             {
                 throw new DuplicateBankNameException();
@@ -88,6 +89,7 @@ namespace Technovert.BankApp.Services
         {
             string currentAccountId = AccountIdGenerator(accountHolderName);
             Bank currentAccount = BankFinder(currentAccountId);
+
             if (currentAccount != null)
             {
                 throw new DuplicateAccountNameException();
@@ -100,6 +102,7 @@ namespace Technovert.BankApp.Services
                 Balance = 0,
                 Transactions = new List<Transaction>()
             };
+
             string bankId = BankIdGenerator(bankName);
             Bank bank = BankFinder(bankId);
             bank.Accounts.Add(account);
@@ -121,9 +124,11 @@ namespace Technovert.BankApp.Services
         public void AccountLogin(string bankName, string accountName, string password)
         {
             InputValidator(bankName, accountName);
+
             string bankId = BankIdGenerator(bankName);
             string accountId = AccountIdGenerator(accountName);
             Account userAccount = AccountFinder(bankId, accountId);
+
             if (userAccount == null)
             {
                 throw new InvalidAccountNameException();
@@ -137,9 +142,11 @@ namespace Technovert.BankApp.Services
         public void Deposit(string bankName, string accountName, decimal amount)
         {
             InputValidator(bankName, accountName);
+
             string bankId = BankIdGenerator(bankName);
             string accountId = AccountIdGenerator(accountName);
             Account userAccount = AccountFinder(bankId, accountId);
+
             if (userAccount == null)
             {
                 throw new InvalidAccountNameException();
@@ -157,9 +164,11 @@ namespace Technovert.BankApp.Services
         public void Withdraw(string bankName, string accountName, decimal amount)
         {
             InputValidator(bankName, accountName);
+
             string bankId = BankIdGenerator(bankName);
             string accountId = AccountIdGenerator(accountName);
             Account userAccount = AccountFinder(bankId, accountId);
+
             if (userAccount == null)
             {
                 throw new InvalidAccountNameException();
@@ -181,12 +190,15 @@ namespace Technovert.BankApp.Services
         public void Transfer(string userBankName, string userAccountName, decimal amount, string beneficiaryBankName, string beneficiaryAccountName)
         {
             InputValidator(userAccountName, beneficiaryAccountName, userBankName, beneficiaryBankName);
+
             string userBankId = BankIdGenerator(userBankName);
             string userAccountId = AccountIdGenerator(userAccountName);
             Account userAccount = AccountFinder(userBankId, userAccountId);
+
             string beneficiaryBankId = BankIdGenerator(beneficiaryBankName);
             string beneficiaryAccountId = AccountIdGenerator(beneficiaryAccountName);
             Account beneficiaryAccount = AccountFinder(beneficiaryBankId, beneficiaryAccountId);
+
             if (userAccount == null || beneficiaryAccount == null)
             {
                 throw new InvalidAccountNameException();
@@ -195,6 +207,7 @@ namespace Technovert.BankApp.Services
             {
                 throw new InsufficientFundsException();
             }
+
             userAccount.Balance -= amount;
             userAccount.Transactions.Add(new Transaction()
             {
@@ -203,6 +216,7 @@ namespace Technovert.BankApp.Services
                 Type = TransactionType.Debit,
                 On=today
             });
+
             beneficiaryAccount.Balance += amount;
             beneficiaryAccount.Transactions.Add(new Transaction()
             {
@@ -217,7 +231,9 @@ namespace Technovert.BankApp.Services
         {
             string bankId = BankIdGenerator(bankName);
             string accountId = AccountIdGenerator(accountName);
+
             List<Transaction> CopiedTransactions = new List<Transaction>();
+
             foreach (var i in banks)
             {
                 if (i.Id == bankId)

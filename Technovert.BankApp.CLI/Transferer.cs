@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Technovert.BankApp.Services;
-using Technovert.BankApp.Models;
+using Technovert.BankApp.Models.Exceptions;
 
 namespace Technovert.BankApp.CLI
 {
@@ -20,15 +20,15 @@ namespace Technovert.BankApp.CLI
             beneficiaryName = Console.ReadLine();
             Console.Write("Enter the amount to be transfered : ");
             amount = Convert.ToInt32(Console.ReadLine());
-            bool response=service.Transfer(bankName,accountName, amount, beneficiaryBankName, beneficiaryName);
-            if (response)
+            try
             {
+                service.Transfer(bankName, accountName, amount, beneficiaryBankName, beneficiaryName);
                 Printer printer = new Printer();
                 printer.ResponsePrinter("Transfer");
             }
-            else
+            catch(Exception ex)
             {
-                Console.WriteLine("\n");
+                Console.WriteLine(ex.Message);
             }
         }
     }

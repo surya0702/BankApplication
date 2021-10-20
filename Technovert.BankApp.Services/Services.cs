@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Technovert.BankApp.Models;
+using Technovert.BankApp.Models.Exceptions;
 
 namespace Technovert.BankApp.Services
 {
@@ -18,16 +19,15 @@ namespace Technovert.BankApp.Services
             this.banks = new List<Bank>();
         }
 
-        public bool InputValidator(params string[] inputs)
+        public void InputValidator(params string[] inputs)
         {
             foreach (var input in inputs)
             {
                 if (String.IsNullOrWhiteSpace(input))
                 {
-                    return false;
+                    throw new InvalidInputException();
                 }
             }
-            return true;
         }
 
         public Bank BankFinder(string bankId)
@@ -68,19 +68,30 @@ namespace Technovert.BankApp.Services
             return "TXN" + bankId + accountId + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy");
         }
 
-        public string CreateBank(string bankName)
+        public void CreateBank(string bankName)
         {
+            string currentBankId = BankIdGenerator(bankName);
+            Bank currentBank = BankFinder(currentBankId);
+            if (currentBank != null)
+            {
+                throw new DuplicateBankNameException();
+            }
             Bank newBank = new Bank()
             {
                 Name = bankName,
-                Id = BankIdGenerator(bankName),
+                Id = currentBankId,
                 Accounts = new List<Account>()
             };
             this.banks.Add(newBank);
-            return newBank.Id;
         }
         public void CreateAccount(string bankName, string accountHolderName, string password)
         {
+            string currentAccountId = AccountIdGenerator(accountHolderName);
+            Bank currentAccount = BankFinder(currentAccountId);
+            if (currentAccount != null)
+            {
+                throw new DuplicateAccountNameException();
+            }
             Account account = new Account()
             {
                 Name=accountHolderName,
@@ -94,116 +105,112 @@ namespace Technovert.BankApp.Services
             bank.Accounts.Add(account);
         }
 
-        public bool BankLogin(string bankName)
+        public void BankLogin(string bankName)
         {
             string bankId = BankIdGenerator(bankName);
             foreach (var d in banks)
             {
                 if (d.Id == bankId)
                 {
-                    return true;
+                    return ;
                 }
             }
-            return false;
+            throw new InvalidBankNameException();
         }
 
-        public bool AccountLogin(string bankName, string accountName, string password)
+        public void AccountLogin(string bankName, string accountName, string password)
         {
-            if (InputValidator(bankName,accountName))
+            InputValidator(bankName, accountName);
+            string bankId = BankIdGenerator(bankName);
+            string accountId = AccountIdGenerator(accountName);
+            Account userAccount = AccountFinder(bankId, accountId);
+            if (userAccount == null)
             {
-                string bankId = BankIdGenerator(bankName);
-                string accountId = AccountIdGenerator(accountName);
-                Account userAccount = AccountFinder(bankId, accountId);
-                if (userAccount == null || userAccount.Password != password)
-                {
-                    return false;
-                }
-                return true;
+                throw new InvalidAccountNameException();
             }
-            return false;
+            if (userAccount.Password != password)
+            {
+                throw new InvalidAccountPasswordException();
+            }
         }
 
-        public bool Deposit(string bankName, string accountName, decimal amount)
+        public void Deposit(string bankName, string accountName, decimal amount)
         {
-            if (InputValidator(bankName,accountName))
+            InputValidator(bankName, accountName);
+            string bankId = BankIdGenerator(bankName);
+            string accountId = AccountIdGenerator(accountName);
+            Account userAccount = AccountFinder(bankId, accountId);
+            if (userAccount == null)
             {
-                string bankId = BankIdGenerator(bankName);
-                string accountId = AccountIdGenerator(accountName);
-                Account userAccount = AccountFinder(bankId, accountId);
-                if (userAccount == null)
-                {
-                    return false;
-                }
-                userAccount.Balance += amount;
-                userAccount.Transactions.Add(new Transaction()
-                {
-                    Id = TransactionIdGenerator(bankId,accountId),
-                    Amount = amount,
-                    Type = TransactionType.Credit
-                });
-                return true;
+                throw new InvalidAccountNameException();
             }
-            return false;
+            userAccount.Balance += amount;
+            userAccount.Transactions.Add(new Transaction()
+            {
+                Id = TransactionIdGenerator(bankId, accountId),
+                Amount = amount,
+                Type = TransactionType.Credit,
+                On = today
+            });
         }
 
-        public bool Withdraw(string bankName, string accountName, decimal amount)
+        public void Withdraw(string bankName, string accountName, decimal amount)
         {
-            if (InputValidator(bankName,accountName))
+            InputValidator(bankName, accountName);
+            string bankId = BankIdGenerator(bankName);
+            string accountId = AccountIdGenerator(accountName);
+            Account userAccount = AccountFinder(bankId, accountId);
+            if (userAccount == null)
             {
-                string bankId = BankIdGenerator(bankName);
-                string accountId = AccountIdGenerator(accountName);
-                Account userAccount = AccountFinder(bankId, accountId);
-                if (userAccount == null || userAccount.Balance < amount)
-                {
-                    return false;
-                }
-                userAccount.Balance -= amount;
-                userAccount.Transactions.Add(new Transaction()
-                {
-                    Id = TransactionIdGenerator(bankId, accountId),
-                    Amount = amount,
-                    Type = TransactionType.Debit
-                });
-                return true;
+                throw new InvalidAccountNameException();
             }
-            return false;
+            if(userAccount.Balance < amount)
+            {
+                throw new InsufficientFundsException();
+            }
+            userAccount.Balance -= amount;
+            userAccount.Transactions.Add(new Transaction()
+            {
+                Id = TransactionIdGenerator(bankId, accountId),
+                Amount = amount,
+                Type = TransactionType.Debit,
+                On=today
+            });
         }
 
-        public bool Transfer(string userBankName, string userAccountName, decimal amount, string beneficiaryBankName, string beneficiaryAccountName)
+        public void Transfer(string userBankName, string userAccountName, decimal amount, string beneficiaryBankName, string beneficiaryAccountName)
         {
-            try
+            InputValidator(userAccountName, beneficiaryAccountName, userBankName, beneficiaryBankName);
+            string userBankId = BankIdGenerator(userBankName);
+            string userAccountId = AccountIdGenerator(userAccountName);
+            Account userAccount = AccountFinder(userBankId, userAccountId);
+            string beneficiaryBankId = BankIdGenerator(beneficiaryBankName);
+            string beneficiaryAccountId = AccountIdGenerator(beneficiaryAccountName);
+            Account beneficiaryAccount = AccountFinder(beneficiaryBankId, beneficiaryAccountId);
+            if (userAccount == null || beneficiaryAccount == null)
             {
-                if (InputValidator(userAccountName,beneficiaryAccountName,userBankName,beneficiaryBankName))
-                {
-                    string userBankId = BankIdGenerator(userBankName);
-                    string userAccountId = AccountIdGenerator(userAccountName);
-                    Account userAccount = AccountFinder(userBankId, userAccountId);
-                    string beneficiaryBankId = BankIdGenerator(beneficiaryBankName);
-                    string beneficiaryAccountId = AccountIdGenerator(beneficiaryAccountName);
-                    Account beneficiaryAccount = AccountFinder(beneficiaryBankId, beneficiaryAccountId);
-                    if (userAccount == null || beneficiaryAccount == null || userAccount.Balance < amount)
-                    {
-                        return false;
-                    }
-                    userAccount.Balance -= amount;
-                    userAccount.Transactions.Add(new Transaction()
-                    {
-                        Id = TransactionIdGenerator(userBankId, userAccountId),
-                        Amount = amount,
-                        Type = TransactionType.Debit
-                    });
-                    beneficiaryAccount.Balance += amount;
-                    beneficiaryAccount.Transactions.Add(new Transaction()
-                    {
-                        Id = TransactionIdGenerator(beneficiaryBankId, beneficiaryAccountId),
-                        Amount = amount,
-                        Type = TransactionType.Credit
-                    });
-                    return true;
-                }
+                throw new InvalidAccountNameException();
             }
-            catch { }
-            return false;
+            if(userAccount.Balance < amount)
+            {
+                throw new InsufficientFundsException();
+            }
+            userAccount.Balance -= amount;
+            userAccount.Transactions.Add(new Transaction()
+            {
+                Id = TransactionIdGenerator(userBankId, userAccountId),
+                Amount = amount,
+                Type = TransactionType.Debit,
+                On=today
+            });
+            beneficiaryAccount.Balance += amount;
+            beneficiaryAccount.Transactions.Add(new Transaction()
+            {
+                Id = TransactionIdGenerator(beneficiaryBankId, beneficiaryAccountId),
+                Amount = amount,
+                Type = TransactionType.Credit,
+                On=today
+            });
         }
 
         public List<Transaction> TransactionLogCopy(string bankName, string accountName)

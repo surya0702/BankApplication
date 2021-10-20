@@ -9,11 +9,12 @@ namespace Technovert.BankApp.CLI
     {
         public void Logger(string bankName,BankService service)
         {
-            List<string> LoginOptions = new List<string>() { "Login to Account", "CreateAccount", "Exit from Bank" };
+            List<string> LoginOptions = new List<string>() { "Login to Account", "Create new Account", "Exit from Bank" };
             while (true)
             {
                 bool stop = false;
                 string userLoginOption = "";
+                Console.WriteLine();
                 for (int i = 0; i < LoginOptions.Count; i++)
                 {
                     Console.WriteLine("(" + (i + 1) + ") " + LoginOptions[i]);
@@ -36,7 +37,7 @@ namespace Technovert.BankApp.CLI
                             login.Logger(bankName,service);
                             break;
                         }
-                    case "CreateAccount":
+                    case "Create new Account":
                         {
                             AccountCreator account = new AccountCreator();
                             account.Create(bankName,service);

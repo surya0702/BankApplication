@@ -15,15 +15,15 @@ namespace Technovert.BankApp.CLI
             decimal amount;
             Console.Write("Please Enter the amount to be Withdrawn : ");
             amount = Convert.ToDecimal(Console.ReadLine());
-            bool response = service.Withdraw(bankName,accountName, amount);
-            if (response)
+            try
             {
+                service.Withdraw(bankName, accountName, amount);
                 Printer printer = new Printer();
                 printer.ResponsePrinter("Withdraw");
             }
-            else
+            catch(Exception ex)
             {
-                Console.WriteLine("\n");
+                Console.WriteLine(ex.Message);
             }
         }
     }

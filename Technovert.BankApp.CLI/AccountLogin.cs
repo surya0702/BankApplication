@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Technovert.BankApp.Models;
+using Technovert.BankApp.Models.Exceptions;
 using Technovert.BankApp.Services;
 
 namespace Technovert.BankApp.CLI
@@ -17,19 +17,20 @@ namespace Technovert.BankApp.CLI
             accountName = Console.ReadLine();
             Console.Write("Enter your Password : ");
             password = Console.ReadLine();
-            bool response = service.AccountLogin(bankName,accountName, password);
-            if (response)
+            try
             {
+                service.AccountLogin(bankName, accountName, password);
                 Printer printer = new Printer();
                 printer.ResponsePrinter("Logged into Account");
-                LoginOptions options = new LoginOptions(); 
+                LoginOptions options = new LoginOptions();
                 string choosenOption = options.AvailableOptions();
                 LoginOptionsChooser choice = new LoginOptionsChooser();
-                choice.Choice(bankName,accountName, choosenOption, service);
+                choice.Choice(bankName, accountName, choosenOption, service);
             }
-            else
+            catch(Exception ex)
             {
-                Console.WriteLine("\nInvalid Details");
+                Console.WriteLine(ex.Message);
+                
             }
         }
     }

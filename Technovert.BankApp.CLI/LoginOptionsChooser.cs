@@ -43,7 +43,7 @@ namespace Technovert.BankApp.CLI
                             List<Transaction> Transactions = service.TransactionLogCopy(bankName,accountName);
                             foreach(var i in Transactions)
                             {
-                                Console.WriteLine(i.Id+" "+i.Type+" "+i.Amount);
+                                Console.WriteLine(i.Id+" "+i.Type+" "+i.Amount+" "+i.On);
                             }
                             break;
                         }

@@ -14,6 +14,7 @@ namespace Technovert.BankApp.Services
     {
         private List<Bank> banks;
         DateTime today = DateTime.Today;
+        Random rand = new Random();
         public BankService()
         {
             this.banks = new List<Bank>();
@@ -32,51 +33,38 @@ namespace Technovert.BankApp.Services
 
         public Bank BankFinder(string bankId)
         {
-            foreach (var d in banks)
-            {
-                if (d.Id == bankId)
-                {
-                    return d;
-                }
-            }
-            return null;
+            return this.banks.SingleOrDefault(x => x.Id == bankId);
         }
 
         public Account AccountFinder(string bankId, string accountId)
         {
             Bank bank = BankFinder(bankId);
-            foreach(var d in bank.Accounts)
-            {
-                if (d.Id == accountId)
-                {
-                    return d;
-                }
-            }
-            return null;
+            return bank.Accounts.SingleOrDefault(x => x.Id == accountId);
         }
         
         public string BankIdGenerator(string bankName)
         {
-            return bankName.Substring(0,3).ToUpper() + today.ToString("dd")+today.ToString("MM")+today.ToString("yyyy");
+            return bankName.Substring(0,3).ToUpper() + today.ToString("dd")+today.ToString("MM")+today.ToString("yyyy") + today.ToString("hh") + today.ToString("mm");
         }
         public string AccountIdGenerator(string AccountHolderName)
         {
-            return AccountHolderName.Substring(0,3).ToUpper() + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy");
+            return AccountHolderName.Substring(0,3).ToUpper() + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy") + today.ToString("hh") + today.ToString("mm");
         }
         public string TransactionIdGenerator(string bankId, string accountId)
         {
-            return "TXN" + bankId + accountId + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy");
+            return "TXN" + bankId + accountId + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy") + today.ToString("hh") + today.ToString("mm");
         }
 
-        public void CreateBank(string bankName)
+        public string CreateBank(string bankName)
         {
             string currentBankId = BankIdGenerator(bankName);
-            Bank currentBank = BankFinder(currentBankId);
 
+            Bank currentBank = BankFinder(currentBankId);
             if (currentBank != null)
             {
                 throw new DuplicateBankNameException();
             }
+
             Bank newBank = new Bank()
             {
                 Name = bankName,
@@ -84,8 +72,10 @@ namespace Technovert.BankApp.Services
                 Accounts = new List<Account>()
             };
             this.banks.Add(newBank);
+
+            return currentBankId;
         }
-        public void CreateAccount(string bankName, string accountHolderName, string password)
+        public string CreateAccount(string bankId, string accountHolderName, string password)
         {
             string currentAccountId = AccountIdGenerator(accountHolderName);
             Bank currentAccount = BankFinder(currentAccountId);
@@ -96,38 +86,33 @@ namespace Technovert.BankApp.Services
             }
             Account account = new Account()
             {
-                Name=accountHolderName,
+                Name = accountHolderName,
                 Id = AccountIdGenerator(accountHolderName),
                 Password = password,
                 Balance = 0,
                 Transactions = new List<Transaction>()
             };
 
-            string bankId = BankIdGenerator(bankName);
             Bank bank = BankFinder(bankId);
             bank.Accounts.Add(account);
+
+            return currentAccountId;
         }
 
-        public void BankLogin(string bankName)
+        public void BankLogin(string bankId)
         {
-            string bankId = BankIdGenerator(bankName);
-            foreach (var d in banks)
+            Bank currentBank = BankFinder(bankId);
+            if (currentBank == null)
             {
-                if (d.Id == bankId)
-                {
-                    return ;
-                }
+                throw new InvalidBankNameException();
             }
-            throw new InvalidBankNameException();
         }
 
-        public void AccountLogin(string bankName, string accountName, string password)
+        public void AccountLogin(string bankId, string accountHolderId, string password)
         {
-            InputValidator(bankName, accountName);
+            InputValidator(bankId, accountHolderId);
 
-            string bankId = BankIdGenerator(bankName);
-            string accountId = AccountIdGenerator(accountName);
-            Account userAccount = AccountFinder(bankId, accountId);
+            Account userAccount = AccountFinder(bankId, accountHolderId);
 
             if (userAccount == null)
             {
@@ -139,13 +124,11 @@ namespace Technovert.BankApp.Services
             }
         }
 
-        public void Deposit(string bankName, string accountName, decimal amount)
+        public void Deposit(string bankId, string accountHolderId, decimal amount)
         {
-            InputValidator(bankName, accountName);
+            InputValidator(bankId, accountHolderId);
 
-            string bankId = BankIdGenerator(bankName);
-            string accountId = AccountIdGenerator(accountName);
-            Account userAccount = AccountFinder(bankId, accountId);
+            Account userAccount = AccountFinder(bankId, accountHolderId);
 
             if (userAccount == null)
             {
@@ -154,20 +137,18 @@ namespace Technovert.BankApp.Services
             userAccount.Balance += amount;
             userAccount.Transactions.Add(new Transaction()
             {
-                Id = TransactionIdGenerator(bankId, accountId),
+                Id = TransactionIdGenerator(bankId, accountHolderId),
                 Amount = amount,
                 Type = TransactionType.Credit,
                 On = today
             });
         }
 
-        public void Withdraw(string bankName, string accountName, decimal amount)
+        public void Withdraw(string bankId, string accountHolderId, decimal amount)
         {
-            InputValidator(bankName, accountName);
+            InputValidator(bankId, accountHolderId);
 
-            string bankId = BankIdGenerator(bankName);
-            string accountId = AccountIdGenerator(accountName);
-            Account userAccount = AccountFinder(bankId, accountId);
+            Account userAccount = AccountFinder(bankId, accountHolderId);
 
             if (userAccount == null)
             {
@@ -180,23 +161,19 @@ namespace Technovert.BankApp.Services
             userAccount.Balance -= amount;
             userAccount.Transactions.Add(new Transaction()
             {
-                Id = TransactionIdGenerator(bankId, accountId),
+                Id = TransactionIdGenerator(bankId, accountHolderId),
                 Amount = amount,
                 Type = TransactionType.Debit,
                 On=today
             });
         }
 
-        public void Transfer(string userBankName, string userAccountName, decimal amount, string beneficiaryBankName, string beneficiaryAccountName)
+        public void Transfer(string userBankId, string userAccountId, decimal amount, string beneficiaryBankId, string beneficiaryAccountId)
         {
-            InputValidator(userAccountName, beneficiaryAccountName, userBankName, beneficiaryBankName);
+            InputValidator(userAccountId, beneficiaryAccountId, userBankId, beneficiaryBankId);
 
-            string userBankId = BankIdGenerator(userBankName);
-            string userAccountId = AccountIdGenerator(userAccountName);
             Account userAccount = AccountFinder(userBankId, userAccountId);
 
-            string beneficiaryBankId = BankIdGenerator(beneficiaryBankName);
-            string beneficiaryAccountId = AccountIdGenerator(beneficiaryAccountName);
             Account beneficiaryAccount = AccountFinder(beneficiaryBankId, beneficiaryAccountId);
 
             if (userAccount == null || beneficiaryAccount == null)
@@ -227,11 +204,8 @@ namespace Technovert.BankApp.Services
             });
         }
 
-        public List<Transaction> TransactionLogCopy(string bankName, string accountName)
+        public List<Transaction> TransactionLogCopy(string bankId, string accountId)
         {
-            string bankId = BankIdGenerator(bankName);
-            string accountId = AccountIdGenerator(accountName);
-
             List<Transaction> CopiedTransactions = new List<Transaction>();
 
             foreach (var i in banks)

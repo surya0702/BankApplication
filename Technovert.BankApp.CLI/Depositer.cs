@@ -10,14 +10,14 @@ namespace Technovert.BankApp.CLI
 {
     public class Depositer
     {
-        public void Deposite(string bankName,string accountName,BankService service)
+        public void Deposite(string bankId,string accountId,BankService service)
         {
             decimal amount;
             Console.Write("Please Enter the amount to be Deposited : ");
             amount = Convert.ToDecimal(Console.ReadLine());
             try
             {
-                service.Deposit(bankName, accountName, amount); // Deposited the amount into user's Account
+                service.Deposit(bankId, accountId, amount); // Deposited the amount into user's Account
                 Printer printer = new Printer();
                 printer.ResponsePrinter("Deposit");
             }

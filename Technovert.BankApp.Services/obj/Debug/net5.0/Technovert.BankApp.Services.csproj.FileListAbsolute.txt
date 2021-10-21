@@ -12,4 +12,3 @@ C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Services\obj\D
 C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Services\obj\Debug\net5.0\Technovert.BankApp.Services.dll
 C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Services\obj\Debug\net5.0\ref\Technovert.BankApp.Services.dll
 C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Services\obj\Debug\net5.0\Technovert.BankApp.Services.pdb
-C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.Services\obj\Debug\net5.0\Technovert.BankApp.Services.csproj.CopyComplete

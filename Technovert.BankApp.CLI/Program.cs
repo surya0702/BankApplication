@@ -33,12 +33,12 @@ namespace Technovert.BankApp.CLI
                 {
                     case "Login to Bank":
                         {
-                            string bankName;
-                            Console.Write("Enter your Bank Name : ");
-                            bankName = Console.ReadLine();
+                            string bankId;
+                            Console.Write("Enter your Bank Id : ");
+                            bankId = Console.ReadLine();
                             try
                             {
-                                service.BankLogin(bankName);
+                                service.BankLogin(bankId);
                             }
                             catch(InvalidBankNameException ex)
                             {
@@ -46,12 +46,12 @@ namespace Technovert.BankApp.CLI
                                 break;
                             }
                             AccountLogger accountLogger = new AccountLogger();
-                            accountLogger.Logger(bankName, service);
+                            accountLogger.Logger(bankId, service);
                             break;
                         }
                     case "Create New Bank":
                         {
-                            string bankName;
+                            string bankName,bankId;
                             while (true)
                             {
                                 Console.Write("Enter your Bank Name : ");
@@ -65,17 +65,17 @@ namespace Technovert.BankApp.CLI
                                     Console.WriteLine("Name should contain at least 3 Characters");
                                 }
                             }
-                            Console.Write("Enter your Bank Name : ");
-                            bankName = Console.ReadLine();
                             try
                             {
-                                service.CreateBank(bankName);
+                                bankId=service.CreateBank(bankName);
                             }
                             catch(DuplicateBankNameException ex)
                             {
-                                Console.WriteLine(ex.Message);
+                                Console.WriteLine("\n"+ex.Message);
                                 break;
                             }
+                            Printer printer = new Printer();
+                            printer.ResponsePrinter("Bank Created Successfully! Your Bank Id is : " + bankId);
                             AccountLogger accountLogger = new AccountLogger();
                             accountLogger.Logger(bankName, service);
                             break;

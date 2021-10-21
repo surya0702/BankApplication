@@ -10,22 +10,22 @@ namespace Technovert.BankApp.CLI
 {
     public class AccountLogin
     {
-        public void Logger(string bankName,BankService service)
+        public void Logger(string bankId,BankService service)
         {
-            string accountName, password;
-            Console.Write("Enter your Account name: ");
-            accountName = Console.ReadLine();
+            string accountId, password;
+            Console.Write("Enter your Account Id : ");
+            accountId = Console.ReadLine();
             Console.Write("Enter your Password : ");
             password = Console.ReadLine();
             try
             {
-                service.AccountLogin(bankName, accountName, password);
+                service.AccountLogin(bankId, accountId, password);
                 Printer printer = new Printer();
                 printer.ResponsePrinter("Logged into Account");
                 LoginOptions options = new LoginOptions();
                 string choosenOption = options.AvailableOptions();
                 LoginOptionsChooser choice = new LoginOptionsChooser();
-                choice.Choice(bankName, accountName, choosenOption, service);
+                choice.Choice(bankId, accountId, choosenOption, service);
             }
             catch(Exception ex)
             {

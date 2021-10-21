@@ -10,14 +10,14 @@ namespace Technovert.BankApp.CLI
 {
     public class Withdrawer
     {
-        public void Withdraw(string bankName,string accountName,BankService service)
+        public void Withdraw(string bankId,string accountId,BankService service)
         {
             decimal amount;
             Console.Write("Please Enter the amount to be Withdrawn : ");
             amount = Convert.ToDecimal(Console.ReadLine());
             try
             {
-                service.Withdraw(bankName, accountName, amount);
+                service.Withdraw(bankId, accountId, amount);
                 Printer printer = new Printer();
                 printer.ResponsePrinter("Withdraw");
             }

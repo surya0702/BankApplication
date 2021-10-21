@@ -10,19 +10,19 @@ namespace Technovert.BankApp.CLI
 {
     public class Transferer
     {
-        public void Transfer(string bankName,string accountName,BankService service)
+        public void Transfer(string bankId,string accountId,BankService service)
         {
             decimal amount;
-            string beneficiaryBankName,beneficiaryName;
-            Console.Write("Enter the Beneficiary's Bank Name : ");
-            beneficiaryBankName = Console.ReadLine();
-            Console.Write("Enter the Beneficiary Name : ");
-            beneficiaryName = Console.ReadLine();
+            string beneficiaryBankId,beneficiaryAccountId;
+            Console.Write("Enter the Beneficiary's Bank Id : ");
+            beneficiaryBankId = Console.ReadLine();
+            Console.Write("Enter the Beneficiary Account Id : ");
+            beneficiaryAccountId = Console.ReadLine();
             Console.Write("Enter the amount to be transfered : ");
             amount = Convert.ToInt32(Console.ReadLine());
             try
             {
-                service.Transfer(bankName, accountName, amount, beneficiaryBankName, beneficiaryName);
+                service.Transfer(bankId, accountId, amount, beneficiaryBankId, beneficiaryAccountId);
                 Printer printer = new Printer();
                 printer.ResponsePrinter("Transfer");
             }

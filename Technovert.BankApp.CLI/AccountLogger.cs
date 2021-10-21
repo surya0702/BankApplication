@@ -7,7 +7,7 @@ namespace Technovert.BankApp.CLI
 {
     public class AccountLogger
     {
-        public void Logger(string bankName,BankService service)
+        public void Logger(string bankId,BankService service)
         {
             List<string> LoginOptions = new List<string>() { "Login to Account", "Create new Account", "Exit from Bank" };
             while (true)
@@ -34,13 +34,13 @@ namespace Technovert.BankApp.CLI
                     case "Login to Account":
                         {
                             AccountLogin login = new AccountLogin();
-                            login.Logger(bankName,service);
+                            login.Logger(bankId,service);
                             break;
                         }
                     case "Create new Account":
                         {
                             AccountCreator account = new AccountCreator();
-                            account.Create(bankName,service);
+                            account.Create(bankId,service);
                             break;
                         }
                     case "Exit from Bank":

@@ -10,9 +10,9 @@ namespace Technovert.BankApp.CLI
 {
     public class AccountCreator
     {
-        public void Create(string bankName,BankService service)
+        public void Create(string bankId,BankService service)
         {
-            string accountName, password;
+            string accountName, password, accountId;
             while (true)
             {
                 Console.Write("Enter your Name : ");
@@ -30,12 +30,13 @@ namespace Technovert.BankApp.CLI
             password = Console.ReadLine();
             try
             {
-                service.CreateAccount(bankName, accountName, password);// Account Created
-                Console.WriteLine("\nAccount Created".ToUpper());
+                accountId=service.CreateAccount(bankId, accountName, password);// Account Created
+                Printer printer = new Printer();
+                printer.ResponsePrinter("Account Created Successfully! Your Account Id is : " + accountId);
                 LoginOptions options = new LoginOptions();
                 string choosenOption = options.AvailableOptions(); // Displays the Main menu
                 LoginOptionsChooser choice = new LoginOptionsChooser();
-                choice.Choice(bankName, accountName, choosenOption, service); // Retrieves the users choice
+                choice.Choice(bankId, accountName, choosenOption, service); // Retrieves the users choice
             }
             catch(Exception ex)
             {

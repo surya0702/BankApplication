@@ -8,9 +8,10 @@ namespace Technovert.BankApp.Services
 {
     public class CurrencyConverter
     {
-        public decimal Converter()
+        public decimal Converter(decimal amount,decimal exchangeRate)
         {
-            return 1;
+            decimal actualAmount = amount * exchangeRate;
+            return actualAmount;
         }
     }
 }

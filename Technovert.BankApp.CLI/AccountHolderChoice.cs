@@ -12,6 +12,7 @@ namespace Technovert.BankApp.CLI
     {
         public void Choice(string bankId,string accountId, string userOption,TransactionService transactionService,string[] options)
         {
+            Printer printer = new Printer();
             while (true)
             {
                 bool stop = false;
@@ -37,19 +38,33 @@ namespace Technovert.BankApp.CLI
                         }
                     case "Transaction History":
                         {
-                            string description = "Transaction Log";
-                            Printer printer = new Printer();
-                            printer.ResponsePrinter(description);
-                            /*List<Transaction> Transactions = service.TransactionLogCopy(bankId,accountId);
-                            foreach(var i in Transactions)
+                            try
                             {
-                                Console.WriteLine(i.Id+" "+i.Type+" "+i.Amount+" "+i.On);
-                            }*/
+                                List<Transaction> transactions = transactionService.TransactionHistory(bankId, accountId);
+                                printer.ResponsePrinter("Transaction Log");
+                                printer.TablePrinter(transactions);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                            break;
+                        }
+                    case "View Balance":
+                        {
+                            try
+                            {
+                                decimal balance=transactionService.ViewBalance(bankId, accountId);
+                                printer.ResponsePrinter("Available Balance is : " + balance);
+                            }
+                            catch(Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
                             break;
                         }
                     case "LogOut":
                         {
-                            Printer printer = new Printer();
                             printer.ResponsePrinter("Logged Out");
                             stop = true;
                             break;

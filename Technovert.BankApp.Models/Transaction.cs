@@ -13,7 +13,7 @@ namespace Technovert.BankApp.Models
         public string On { get; set; }
         public Decimal Tax { get; set; }
 
-        public string SourceBankId { get; set; }
+        public string SourceBankId  { get; set; }
         public string SourceAccountId { get; set; }
         public string DestinationBankId { get; set; }
         public string DestinationAccountId { get; set; }

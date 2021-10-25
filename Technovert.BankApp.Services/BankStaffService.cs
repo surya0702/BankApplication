@@ -13,6 +13,8 @@ namespace Technovert.BankApp.Services
         private List<StaffAccount> staff;
         DateTime today = DateTime.Today;
         Random rand = new Random();
+
+        private Data data;
         private BankService bankService;
         private AccountHolderService accountHolderService;
         private TransactionService transactionService;
@@ -28,18 +30,13 @@ namespace Technovert.BankApp.Services
         {
             return AccountHolderName.Substring(0, 3).ToUpper() + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy") + DateTime.Now.ToString("HH")+DateTime.Now.ToString("mm");
         }
-        public StaffAccount StaffFinder(string id)
-        {
-            return this.staff.SingleOrDefault(x => x.Id == id);
-        }
         public void CreateStaffAccount(string name)
         {
             StaffAccount newStaff = new StaffAccount()
             {
                 Name = name,
                 Password = name + "@123",
-                Id = name,
-                Currencies = new List<Currency>(),
+                Id = name
             };
             this.staff.Add(newStaff);
         }
@@ -58,7 +55,7 @@ namespace Technovert.BankApp.Services
 
             return new string[]{ newAccount.Id, newAccount.Password};
         }
-        public void Login( BankService bankService, AccountHolderService accountHolderService, TransactionService transactionService, string id,string password)
+        public void Login(Data data, BankService bankService, AccountHolderService accountHolderService, TransactionService transactionService, string id,string password)
         {
             if(String.IsNullOrWhiteSpace(id) || String.IsNullOrWhiteSpace(password))
             {
@@ -73,6 +70,7 @@ namespace Technovert.BankApp.Services
             {
                 throw new InvalidAccountPasswordException();
             }
+            this.data = data;
             this.bankService = bankService;
             this.accountHolderService = accountHolderService;
             this.transactionService = transactionService;
@@ -86,7 +84,7 @@ namespace Technovert.BankApp.Services
             }
             return account;
         }
-        public void AddNewCurrency(string id,string name,string code,decimal exchangeRate)
+        public void AddNewCurrency(string name,string code,decimal exchangeRate)
         {
             Currency newCurrency = new Currency()
             {
@@ -94,8 +92,7 @@ namespace Technovert.BankApp.Services
                 Code = code,
                 ExchangeRate = exchangeRate
             };
-            StaffAccount currentStaff = StaffFinder(id);
-            currentStaff.Currencies.Add(newCurrency);
+            this.data.currencies.Add(newCurrency);
         }
         public void UpdateAccount(string accountId,string bankId,string newName=null,string newPassword=null)
         {
@@ -132,7 +129,7 @@ namespace Technovert.BankApp.Services
             }
             return account.Transactions;
         }
-        public void UndoTransaction(string bankId,string accountId) // use trans id
+        public void UndoTransaction(string bankId,string accountId,string transactionId)
         {
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
             if (account == null)
@@ -144,11 +141,15 @@ namespace Technovert.BankApp.Services
             {
                 throw new InsufficientTransactions();
             }
-            Transaction undoTransaction = transaction.ElementAt(transaction.Count - 1);
-            transaction.RemoveAt(transaction.Count - 1);
+            Transaction undoTransaction = transaction.SingleOrDefault(x => x.Id == transactionId);
+            if (undoTransaction == null)
+            {
+                throw new InvalidInputException();
+            }
+            transaction.Remove(undoTransaction);
             if (undoTransaction.Type != TransactionType.CASH)
             {
-                this.transactionService.Transfer(undoTransaction.DestinationBankId, undoTransaction.DestinationAccountId, undoTransaction.Amount, undoTransaction.SourceBankId, undoTransaction.SourceAccountId);
+                this.transactionService.Transfer(undoTransaction.DestinationBankId, undoTransaction.DestinationAccountId, undoTransaction.Amount, undoTransaction.SourceBankId, undoTransaction.SourceAccountId,true);
             }
         }
     }

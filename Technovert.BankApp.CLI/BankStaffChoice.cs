@@ -11,7 +11,8 @@ namespace Technovert.BankApp.CLI
 {
     public class BankStaffChoice
     {
-        public void Choice(string id,string userOption,string[] options, BankService bankService , AccountHolderService accountHolderService,BankStaffService bankStaffService)
+        public void Choice(string id,string userOption,string[] options, BankService bankService , AccountHolderService accountHolderService,
+            BankStaffService bankStaffService,TransactionService transactionService)
         {
             Printer printer = new Printer();
             while (true)
@@ -107,12 +108,9 @@ namespace Technovert.BankApp.CLI
                             accountId = Console.ReadLine();
                             try
                             {
-                                List<Transaction> transactions = bankStaffService.ViewTransactions(bankId, accountId);
+                                List<Transaction> transactions = transactionService.TransactionHistory(bankId, accountId);
                                 printer.ResponsePrinter("Transaction Log");
-                                foreach (var d in transactions)
-                                {
-                                    Console.WriteLine(d.Id + " " + d.SourceBankId + " " + d.SourceAccountId + " " + d.DestinationBankId + " " + d.DestinationAccountId + " " + d.Amount + " " + d.On + " " + d.Type);
-                                }
+                                printer.TablePrinter(transactions);
                             }
                             catch(Exception ex)
                             {
@@ -129,10 +127,19 @@ namespace Technovert.BankApp.CLI
                             accountId = Console.ReadLine();
                             try
                             {
-                                bankStaffService.UndoTransaction(bankId, accountId);
+                                List<Transaction> transactions = bankStaffService.ViewTransactions(bankId, accountId);
+                                printer.ResponsePrinter("Transaction Log");
+                                foreach (var d in transactions)
+                                {
+                                    Console.WriteLine(d.Id + " " + d.SourceBankId + " " + d.SourceAccountId + " " + d.DestinationBankId + " " + d.DestinationAccountId + " " + d.Amount + " " + d.On + " " + d.Type);
+                                }
+                                string transactionId;
+                                Console.Write("Enter the Transactions Id which you would like to undo : ");
+                                transactionId = Console.ReadLine();
+                                bankStaffService.UndoTransaction(bankId, accountId,transactionId);
                                 printer.ResponsePrinter("Transaction has been reversed");
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 Console.WriteLine(ex.Message);
                             }
@@ -148,19 +155,19 @@ namespace Technovert.BankApp.CLI
                             code = Console.ReadLine();
                             Console.Write("Enter the Exchange rate with respect to INR : ");
                             exchangeRate = Convert.ToInt32(Console.ReadLine());
-                            bankStaffService.AddNewCurrency(id,name, code, exchangeRate);
+                            bankStaffService.AddNewCurrency(name, code, exchangeRate);
                             printer.ResponsePrinter("New Currency has been Added");
                             break;
                         }
                     case "View Account Details":
                         {
-                            string accountId, password, bankId;
+                            string accountId, bankId;
                             Console.Write("Enter the Bank Id in which the account exists : ");
                             bankId = Console.ReadLine();
                             Console.Write("Enter the Account Id : ");
                             accountId = Console.ReadLine();
                             Account account=bankStaffService.ViewAccountDetails(bankId, accountId);
-                            Console.WriteLine("Name : " + account.Name);
+                            Console.WriteLine("\nName : " + account.Name);
                             Console.WriteLine("Id : " + account.Id);
                             Console.WriteLine("Password : " + account.Password);
                             Console.WriteLine("Balance : " + account.Balance);

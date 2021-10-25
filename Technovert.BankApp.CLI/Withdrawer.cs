@@ -13,7 +13,7 @@ namespace Technovert.BankApp.CLI
         public void Withdraw(string bankId,string accountId,TransactionService transactionService)
         {
             decimal amount;
-            Console.Write("Please Enter the amount to be Withdrawn : ");
+            Console.Write("Please Enter the amount to be Withdrawn in INR : ");
             amount = Convert.ToDecimal(Console.ReadLine());
             try
             {

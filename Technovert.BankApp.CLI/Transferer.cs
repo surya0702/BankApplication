@@ -18,7 +18,7 @@ namespace Technovert.BankApp.CLI
             beneficiaryBankId = Console.ReadLine();
             Console.Write("Enter the Beneficiary Account Id : ");
             beneficiaryAccountId = Console.ReadLine();
-            Console.Write("Enter the amount to be transfered : ");
+            Console.Write("Enter the amount to be transfered in INR : ");
             amount = Convert.ToInt32(Console.ReadLine());
             try
             {

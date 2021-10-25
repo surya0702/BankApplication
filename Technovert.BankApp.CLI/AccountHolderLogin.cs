@@ -21,7 +21,7 @@ namespace Technovert.BankApp.CLI
 
                 accountHolderService.AccountLogin(bankId, accountId, password);
 
-                string[] options = { "Deposit", "Withdraw", "Transfer", "Transaction History", "LogOut" };
+                string[] options = { "Deposit", "Withdraw", "Transfer", "Transaction History", "View Balance","LogOut" };
                 LoginOptions loginOptions = new LoginOptions();
                 string userOption = loginOptions.AvailableOptions(options);
                 AccountHolderChoice optionsChooser = new AccountHolderChoice();

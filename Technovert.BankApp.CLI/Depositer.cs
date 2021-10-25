@@ -12,12 +12,14 @@ namespace Technovert.BankApp.CLI
     {
         public void Deposite(string bankId,string accountId,TransactionService transactionService)
         {
-            decimal amount;
+            string code; decimal amount;
+            Console.Write("Enter the Currency Code : ");
+            code = Console.ReadLine();
             Console.Write("Please Enter the amount to be Deposited : ");
             amount = Convert.ToDecimal(Console.ReadLine());
             try
             {
-                transactionService.Deposit(bankId, accountId, amount); // Deposited the amount into user's Account
+                transactionService.Deposit(bankId, accountId, amount,code); // Deposited the amount into user's Account
                 Printer printer = new Printer();
                 printer.ResponsePrinter("Deposit");
             }

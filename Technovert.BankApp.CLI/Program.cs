@@ -13,14 +13,13 @@ namespace Technovert.BankApp.CLI
             Data data = new Data();
             BankService bankService = new BankService(data);
             AccountHolderService accountHolderService = new AccountHolderService(bankService);
-            TransactionService transactionService = new TransactionService(accountHolderService);
+            TransactionService transactionService = new TransactionService(data,accountHolderService);
 
             bankStaffService.CreateStaffAccount("Admin");
 
             bankService.CreateBank("SBI");
             bankService.CreateBank("YesBank");
             bankService.CreateBank("HDFC");
-
 
             string[] loginOptions = { "Account Holder Login", "Staff Login","Exit from Application" };
             while (true)
@@ -52,7 +51,7 @@ namespace Technovert.BankApp.CLI
                     case "Staff Login":
                         {
                             StaffLogin staff = new StaffLogin();
-                            staff.Login(bankService, accountHolderService, bankStaffService, transactionService);
+                            staff.Login(data,bankService, accountHolderService, bankStaffService, transactionService);
                             break;
                         }
                     case "Exit from Application":

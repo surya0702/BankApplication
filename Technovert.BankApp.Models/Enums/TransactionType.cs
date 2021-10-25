@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Technovert.BankApp.Models
+namespace Technovert.BankApp.Models.Enums
 {
     public enum TransactionType
     {
-        Debit,
-        Credit
+        IMPS,
+        RTGS,
+        CASH
     }
 }

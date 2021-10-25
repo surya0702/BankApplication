@@ -10,9 +10,8 @@ namespace Technovert.BankApp.CLI
 {
     public class LoginOptions
     {
-        public string AvailableOptions()
+        public string AvailableOptions(string[] options)
         {
-            string[] options = { "Deposit", "Withdraw", "Transfer", "Transaction History", "LogOut" };
             Console.WriteLine("\n");
             for (int i = 0; i < options.Length; i++)
             {

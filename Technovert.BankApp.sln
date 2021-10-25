@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Technovert.BankApp.CLI", "Technovert.BankApp.CLI\Technovert.BankApp.CLI.csproj", "{7DA037BE-C0EF-4B31-80FA-B7AE28425219}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Technovert.BankApp.CLI", "Technovert.BankApp.CLI\Technovert.BankApp.CLI.csproj", "{7DA037BE-C0EF-4B31-80FA-B7AE28425219}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Technovert.BankApp.Models", "Technovert.BankApp.Models\Technovert.BankApp.Models.csproj", "{C53858F5-632A-4ECA-9D1A-A2989AE8A759}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Technovert.BankApp.Models", "Technovert.BankApp.Models\Technovert.BankApp.Models.csproj", "{C53858F5-632A-4ECA-9D1A-A2989AE8A759}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Technovert.BankApp.Services", "Technovert.BankApp.Services\Technovert.BankApp.Services.csproj", "{552D8941-E948-4E85-B2FE-69B96412440B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Technovert.BankApp.Services", "Technovert.BankApp.Services\Technovert.BankApp.Services.csproj", "{552D8941-E948-4E85-B2FE-69B96412440B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

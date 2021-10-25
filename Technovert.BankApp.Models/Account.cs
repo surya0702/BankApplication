@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Timers;
-using System.Text;
+﻿using System.Collections.Generic;
+using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.Models
 {

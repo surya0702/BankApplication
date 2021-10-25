@@ -10,7 +10,7 @@ namespace Technovert.BankApp.CLI
 {
     public class Transferer
     {
-        public void Transfer(string bankId,string accountId,BankService service)
+        public void Transfer(string bankId,string accountId,TransactionService transactionService)
         {
             decimal amount;
             string beneficiaryBankId,beneficiaryAccountId;
@@ -22,7 +22,7 @@ namespace Technovert.BankApp.CLI
             amount = Convert.ToInt32(Console.ReadLine());
             try
             {
-                service.Transfer(bankId, accountId, amount, beneficiaryBankId, beneficiaryAccountId);
+                transactionService.Transfer(bankId, accountId, amount, beneficiaryBankId, beneficiaryAccountId);
                 Printer printer = new Printer();
                 printer.ResponsePrinter("Transfer");
             }

@@ -9,20 +9,32 @@ namespace Technovert.BankApp.CLI
     {
         static void Main()
         {
-            BankService service = new BankService();
-            List<string> bankLoginOptions = new List<string>(){ "Login to Bank", "Create New Bank","Exit from Application" };
+            BankStaffService bankStaffService = new BankStaffService();
+            Data data = new Data();
+            BankService bankService = new BankService(data);
+            AccountHolderService accountHolderService = new AccountHolderService(bankService);
+            TransactionService transactionService = new TransactionService(accountHolderService);
+
+            bankStaffService.CreateStaffAccount("Admin");
+
+            bankService.CreateBank("SBI");
+            bankService.CreateBank("YesBank");
+            bankService.CreateBank("HDFC");
+
+
+            string[] loginOptions = { "Account Holder Login", "Staff Login","Exit from Application" };
             while (true)
             {
                 Console.WriteLine();
-                for (int i = 0; i < bankLoginOptions.Count; i++)
+                for (int i = 0; i < loginOptions.Length; i++)
                 {
-                    Console.WriteLine("(" + (i + 1) + ") " + bankLoginOptions[i]);
+                    Console.WriteLine("(" + (i + 1) + ") " + loginOptions[i]);
                 }
                 Console.Write("\nEnter your choice : ");
                 string userBankLogin = "";
                 try
                 {
-                    userBankLogin = bankLoginOptions[Convert.ToInt32(Console.ReadLine()) - 1];
+                    userBankLogin = loginOptions[Convert.ToInt32(Console.ReadLine()) - 1];
                 }
                 catch
                 {
@@ -31,53 +43,16 @@ namespace Technovert.BankApp.CLI
                 bool flag = false;
                 switch (userBankLogin)
                 {
-                    case "Login to Bank":
+                    case "Account Holder Login":
                         {
-                            string bankId;
-                            Console.Write("Enter your Bank Id : ");
-                            bankId = Console.ReadLine();
-                            try
-                            {
-                                service.BankLogin(bankId);
-                            }
-                            catch(InvalidBankNameException ex)
-                            {
-                                Console.WriteLine(ex.Message);
-                                break;
-                            }
-                            AccountLogger accountLogger = new AccountLogger();
-                            accountLogger.Logger(bankId, service);
+                            AccountHolderLogin accountHolder = new AccountHolderLogin();
+                            accountHolder.Login(bankService, accountHolderService,transactionService);
                             break;
                         }
-                    case "Create New Bank":
+                    case "Staff Login":
                         {
-                            string bankName,bankId;
-                            while (true)
-                            {
-                                Console.Write("Enter your Bank Name : ");
-                                bankName = Console.ReadLine();
-                                if (bankName.Length >= 3)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Name should contain at least 3 Characters");
-                                }
-                            }
-                            try
-                            {
-                                bankId=service.CreateBank(bankName);
-                            }
-                            catch(DuplicateBankNameException ex)
-                            {
-                                Console.WriteLine("\n"+ex.Message);
-                                break;
-                            }
-                            Printer printer = new Printer();
-                            printer.ResponsePrinter("Bank Created Successfully! Your Bank Id is : " + bankId);
-                            AccountLogger accountLogger = new AccountLogger();
-                            accountLogger.Logger(bankName, service);
+                            StaffLogin staff = new StaffLogin();
+                            staff.Login(bankService, accountHolderService, bankStaffService, transactionService);
                             break;
                         }
                     case "Exit from Application":

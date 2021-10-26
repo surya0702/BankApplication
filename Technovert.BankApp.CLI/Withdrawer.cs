@@ -8,6 +8,7 @@ using Technovert.BankApp.Models;
 
 namespace Technovert.BankApp.CLI
 {
+    // used to withdraw the amount from users account
     public class Withdrawer
     {
         public void Withdraw(string bankId,string accountId,TransactionService transactionService)

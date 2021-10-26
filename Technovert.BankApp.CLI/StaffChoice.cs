@@ -10,10 +10,11 @@ using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.CLI
 {
-    public class BankStaffChoice
+    // Responds in-accordance to the Staff chosen Services.
+    public class StaffChoice
     {
         public void Choice(string id,string userOption,string[] options, BankService bankService , AccountHolderService accountHolderService,
-            BankStaffService bankStaffService,TransactionService transactionService)
+            StaffService bankStaffService,TransactionService transactionService)
         {
             Printer printer = new Printer();
             while (true)

@@ -9,6 +9,7 @@ using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.CLI
 {
+    // Transfers the amount from user account to beneficiary account
     public class Transferer
     {
         public void Transfer(string bankId,string accountId,TransactionService transactionService)

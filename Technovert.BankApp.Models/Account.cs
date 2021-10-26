@@ -3,6 +3,7 @@ using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.Models
 {
+    // Class to represent the properties available for Account holders
     public class Account
     {
         public string Name { get; set; }

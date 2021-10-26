@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace Technovert.BankApp.Services
 {
+    // Services available for Banks
     public class BankService
     {
         private Data data;
@@ -16,11 +17,13 @@ namespace Technovert.BankApp.Services
         {
             this.data = data;
         }
-        public Bank BankFinder(string bankId)
+
+        public Bank BankFinder(string bankId) // Finds the bank using bankId in data
         {
             return this.data.banks.SingleOrDefault(x => x.Id == bankId);
         }
-        public void CreateBank(string bankName)
+
+        public void CreateBank(string bankName) // Creates a new Bank and adds the bank to data
         {
             if (String.IsNullOrWhiteSpace(bankName))
             {
@@ -34,7 +37,8 @@ namespace Technovert.BankApp.Services
             };
             this.data.banks.Add(newBank);
         }
-        public void BankLogin(string bankId)
+
+        public void BankLogin(string bankId) // login to the bank using bankId
         {
             if (String.IsNullOrWhiteSpace(bankId))
             {

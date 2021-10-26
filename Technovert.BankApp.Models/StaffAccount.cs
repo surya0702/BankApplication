@@ -2,6 +2,7 @@
 
 namespace Technovert.BankApp.Models
 {
+    // Properties available for Staff Accounts
     public class StaffAccount
     {
         public string Name { get; set; }

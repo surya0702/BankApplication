@@ -3,6 +3,7 @@ using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.Models
 {
+    // Properties available for Banks
     public class Bank
     {
         public string Name { get; set; }

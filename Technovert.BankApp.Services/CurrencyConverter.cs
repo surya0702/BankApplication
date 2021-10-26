@@ -13,6 +13,7 @@ using Technovert.BankApp.Models;
 
 namespace Technovert.BankApp.Services
 {
+    // Services available currencies
     public class CurrencyConverter
     {
         private Data data;
@@ -20,12 +21,14 @@ namespace Technovert.BankApp.Services
         {
             this.data = data;
         }
-        public decimal Converter(decimal amount,decimal exchangeRate)
+
+        public decimal Converter(decimal amount,decimal exchangeRate) // Converts the amount into INR using exchange rate
         {
             decimal actualAmount = amount * exchangeRate;
             return actualAmount;
         }
-        public void CurrencyExchange()
+
+        public void CurrencyExchange() // Adds new currencies into the data
         {
             try
             {

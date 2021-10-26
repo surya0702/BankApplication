@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Technovert.BankApp.Models.Enums
 {
+    // Types of available taxes
     public enum TaxType
     {
         IMPS,

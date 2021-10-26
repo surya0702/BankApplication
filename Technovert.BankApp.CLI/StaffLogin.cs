@@ -3,10 +3,11 @@ using Technovert.BankApp.Services;
 
 namespace Technovert.BankApp.CLI
 {
+    // used to login the Staff Members
     public class StaffLogin
     {
         public void Login(Data data,BankService bankService, AccountHolderService accountHolderService,
-            BankStaffService bankStaffService,TransactionService transactionService)
+            StaffService bankStaffService,TransactionService transactionService)
         {
             string id, password;
             Console.Write("Enter your Staff ID : ");
@@ -20,7 +21,7 @@ namespace Technovert.BankApp.CLI
                     "Revert Transaction", "Add new Currency","View Account Details", "LogOut" };
                 LoginOptions loginOptions = new LoginOptions();
                 string userOption = loginOptions.AvailableOptions(options);
-                BankStaffChoice bankStaffChoice = new BankStaffChoice();
+                StaffChoice bankStaffChoice = new StaffChoice();
                 bankStaffChoice.Choice(id,userOption, options, bankService,accountHolderService,bankStaffService,transactionService);
             }
             catch(Exception ex)

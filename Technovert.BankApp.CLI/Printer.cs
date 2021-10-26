@@ -8,6 +8,7 @@ namespace Technovert.BankApp
 {
     public class Printer
     {
+        // Prints the users output string into Console
         public void ResponsePrinter(string description)
         {
             string line = new string('-', description.Length + 2);
@@ -15,6 +16,8 @@ namespace Technovert.BankApp
             Console.WriteLine("| " + description + " |");
             Console.WriteLine("|" + line + "|\n");
         }
+
+        // Prints the Transactions in the form of a table in console.
         public string TablePrinter(List<Transaction> transactions,bool revert=false)
         {
             int SerialNO=1;

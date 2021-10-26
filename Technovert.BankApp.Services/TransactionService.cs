@@ -7,25 +7,29 @@ using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.Services
 {
+    // Transaction Services available for Account holders
     public class TransactionService
     {
-        public int limit = 50000;
-        DateTime today = DateTime.Today;
         private AccountHolderService accountHolder;
         private Data data;
         private CurrencyConverter currencyConverter;
+
+        //public int limit = 50000;
+        DateTime today = DateTime.Today;
+        
         public TransactionService(Data data ,AccountHolderService accountHolder,CurrencyConverter currencyConverter)
         {
             this.data = data;
             this.accountHolder = accountHolder;
             this.currencyConverter = currencyConverter;
         }
-        public string TransactionIdGenerator(string bankId, string accountId)
+
+        public string TransactionIdGenerator(string bankId, string accountId) // Generates a unique transaction id for each transaction done by account holder
         {
             return "TXN" + bankId + accountId + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy") + today.ToString("hh") + today.ToString("mm")+ today.ToString("ss");
         }
         
-        public void Deposit(string bankId, string accountHolderId, decimal amount,string code)
+        public void Deposit(string bankId, string accountHolderId, decimal amount,string code) // Deposits the amount into account holder account
         {
             this.accountHolder.InputValidator(bankId, accountHolderId);
 
@@ -52,7 +56,7 @@ namespace Technovert.BankApp.Services
             });
         }
 
-        public void Withdraw(string bankId, string accountHolderId, decimal amount)
+        public void Withdraw(string bankId, string accountHolderId, decimal amount) // Withdraws the amount from account holders account
         {
             this.accountHolder.InputValidator(bankId, accountHolderId);
 
@@ -77,8 +81,9 @@ namespace Technovert.BankApp.Services
                 TaxType=TaxType.None
             });
         }
+
         public decimal TaxCalculator(string userBankId,string beneficiaryBankId,decimal amount,TaxType taxType)
-        {
+        { // Calculates the tax for transferring the amount from one account to another account
             decimal tax = 0;
             if (taxType == TaxType.IMPS)
             {
@@ -104,8 +109,9 @@ namespace Technovert.BankApp.Services
             }
             return tax/100;
         }
+
         public void Transfer(string userBankId, string userAccountId, decimal amount, string beneficiaryBankId, string beneficiaryAccountId, TaxType taxType)
-        {
+        { // Transfers the amount from one account to another account
             this.accountHolder.InputValidator(userAccountId, beneficiaryAccountId, userBankId, beneficiaryBankId);
 
             Account userAccount = this.accountHolder.AccountFinder(userBankId, userAccountId);
@@ -156,7 +162,7 @@ namespace Technovert.BankApp.Services
         }
 
         public List<Transaction> TransactionHistory(string bankId,string accountId)
-        {
+        { // returns the transactions done by the account holder
             this.accountHolder.InputValidator(bankId, accountId);
             Account account = this.accountHolder.AccountFinder(bankId, accountId);
             if (account == null)
@@ -165,8 +171,9 @@ namespace Technovert.BankApp.Services
             }
             return account.Transactions;
         }
+
         public decimal ViewBalance(string bankId, string accountId)
-        {
+        { // returns the balance available in account
             this.accountHolder.InputValidator(bankId, accountId);
             Account account = this.accountHolder.AccountFinder(bankId, accountId);
             if (account == null)

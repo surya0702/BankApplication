@@ -5,6 +5,7 @@ using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.Models
 {
+    // Properties available for Transactions done by users
     public class Transaction
     {
         public string Id { get; set; }

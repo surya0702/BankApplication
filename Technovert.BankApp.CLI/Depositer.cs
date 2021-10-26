@@ -8,6 +8,7 @@ using Technovert.BankApp.Models.Exceptions;
 
 namespace Technovert.BankApp.CLI
 {
+    // Deposits the amount into users Account
     public class Depositer
     {
         public void Deposite(string bankId,string accountId,TransactionService transactionService)

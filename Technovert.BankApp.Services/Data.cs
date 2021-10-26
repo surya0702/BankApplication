@@ -5,10 +5,12 @@ using Technovert.BankApp.Models;
 
 namespace Technovert.BankApp.Services
 {
+    // Contains all the banks and currencies available in the application
     public class Data
     {
         public List<Bank> banks;
         public List<Currency> currencies;
+
         public Data()
         {
             this.banks = new List<Bank>();

@@ -8,6 +8,7 @@ using Technovert.BankApp.Services;
 
 namespace Technovert.BankApp.CLI
 {
+    // Displays the available options and prompts for user input 
     public class LoginOptions
     {
         public string AvailableOptions(string[] options)

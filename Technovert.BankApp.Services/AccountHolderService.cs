@@ -7,6 +7,7 @@ using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.Services
 {
+    // All the services available for account holders
     public class AccountHolderService
     {
         private BankService bankService;
@@ -14,7 +15,8 @@ namespace Technovert.BankApp.Services
         {
             this.bankService = bankService;
         }
-        public void InputValidator(params string[] inputs)
+
+        public void InputValidator(params string[] inputs) // Validates the user input
         {
             foreach (var input in inputs)
             {
@@ -24,13 +26,14 @@ namespace Technovert.BankApp.Services
                 }
             }
         }
-        public Account AccountFinder(string bankId, string accountId)
+
+        public Account AccountFinder(string bankId, string accountId) // Returns the user account based on bankid and accountid
         {
             Bank bank = this.bankService.BankFinder(bankId);
             return bank.Accounts.SingleOrDefault(x => x.Id == accountId);
         }
         
-        public void AccountLogin(string bankId, string accountHolderId, string password)
+        public void AccountLogin(string bankId, string accountHolderId, string password) // Logs the user into his account by checking with the available id and password
         {
             InputValidator(bankId, accountHolderId);
 

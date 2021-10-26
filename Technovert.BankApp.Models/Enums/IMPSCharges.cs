@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Technovert.BankApp.Models.Enums
 {
+    // Transaction charges based on IMPS
     public enum IMPSCharges
     {
         SameBank = 5,

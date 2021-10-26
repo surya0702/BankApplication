@@ -9,7 +9,8 @@ namespace Technovert.BankApp.Models
     {
         public string Id { get; set; }
         public decimal Amount { get; set; }
-        public TransactionType Type { get; set; }
+        public TransactionType TransactionType { get; set; }
+        public TaxType TaxType { get; set; }
         public string On { get; set; }
         public Decimal Tax { get; set; }
 

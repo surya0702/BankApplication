@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Technovert.BankApp.Services;
 using Technovert.BankApp.Models.Exceptions;
+using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.CLI
 {
@@ -20,11 +21,18 @@ namespace Technovert.BankApp.CLI
             beneficiaryAccountId = Console.ReadLine();
             Console.Write("Enter the amount to be transfered in INR : ");
             amount = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Available Tax Charges for Transaction are : ");
+            TransactionCharges transactionCharges = new TransactionCharges();
+            Console.WriteLine("For Same Bank ->  IMPS : " + transactionCharges.SameBankIMPS + "  RTGS : " + transactionCharges.SameBankRTGS);
+            Console.WriteLine("For Different Bank ->  IMPs : " + transactionCharges.DifferentBankIMPS + "  RTGS : " + transactionCharges.DifferentBankRTGS);
+            Console.Write("Enter the Tax Type in which you would like to transfer the money : ");
+            string tax = Console.ReadLine();
+            TaxType taxType = (TaxType)Convert.ToInt32(tax);
             try
             {
-                transactionService.Transfer(bankId, accountId, amount, beneficiaryBankId, beneficiaryAccountId);
+                transactionService.Transfer(bankId, accountId, amount, beneficiaryBankId, beneficiaryAccountId,taxType);
                 Printer printer = new Printer();
-                printer.ResponsePrinter("Transfer");
+                printer.ResponsePrinter("Transfer Completed");
             }
             catch(Exception ex)
             {

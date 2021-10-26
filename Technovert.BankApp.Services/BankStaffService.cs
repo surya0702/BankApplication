@@ -129,7 +129,7 @@ namespace Technovert.BankApp.Services
             }
             return account.Transactions;
         }
-        public void UndoTransaction(string bankId,string accountId,string transactionId)
+        public void RevertTransaction(string bankId,string accountId,string transactionId)
         {
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
             if (account == null)
@@ -147,9 +147,9 @@ namespace Technovert.BankApp.Services
                 throw new InvalidInputException();
             }
             transaction.Remove(undoTransaction);
-            if (undoTransaction.Type != TransactionType.CASH)
+            if (undoTransaction.TaxType ==TaxType.IMPS || undoTransaction.TaxType==TaxType.RTGS)
             {
-                this.transactionService.Transfer(undoTransaction.DestinationBankId, undoTransaction.DestinationAccountId, undoTransaction.Amount, undoTransaction.SourceBankId, undoTransaction.SourceAccountId,true);
+                this.transactionService.Transfer(undoTransaction.DestinationBankId, undoTransaction.DestinationAccountId, undoTransaction.Amount, undoTransaction.SourceBankId, undoTransaction.SourceAccountId,undoTransaction.TaxType,true);
             }
         }
     }

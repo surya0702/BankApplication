@@ -17,7 +17,7 @@ namespace Technovert.BankApp.CLI
             {
                 bankStaffService.Login(data,bankService, accountHolderService, transactionService, id, password);
                 string[] options = { "Create new Account", "Update Account", "Delete Account","View Transaction History",
-                    "Undo Transaction", "Add new Currency","View Account Details", "LogOut" };
+                    "Revert Transaction", "Add new Currency","View Account Details", "LogOut" };
                 LoginOptions loginOptions = new LoginOptions();
                 string userOption = loginOptions.AvailableOptions(options);
                 BankStaffChoice bankStaffChoice = new BankStaffChoice();

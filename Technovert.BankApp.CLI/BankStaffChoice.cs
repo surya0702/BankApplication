@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Technovert.BankApp.Services;
 using Technovert.BankApp.Models;
 using Technovert.BankApp.Models.Exceptions;
+using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.CLI
 {
@@ -118,7 +119,7 @@ namespace Technovert.BankApp.CLI
                             }
                             break;
                         }
-                    case "Undo Transaction":
+                    case "Revert Transaction":
                         {
                             string accountId, bankId;
                             Console.Write("Enter the Bank Id in which the account exists : ");
@@ -129,14 +130,8 @@ namespace Technovert.BankApp.CLI
                             {
                                 List<Transaction> transactions = bankStaffService.ViewTransactions(bankId, accountId);
                                 printer.ResponsePrinter("Transaction Log");
-                                foreach (var d in transactions)
-                                {
-                                    Console.WriteLine(d.Id + " " + d.SourceBankId + " " + d.SourceAccountId + " " + d.DestinationBankId + " " + d.DestinationAccountId + " " + d.Amount + " " + d.On + " " + d.Type);
-                                }
-                                string transactionId;
-                                Console.Write("Enter the Transactions Id which you would like to undo : ");
-                                transactionId = Console.ReadLine();
-                                bankStaffService.UndoTransaction(bankId, accountId,transactionId);
+                                string transactionId = printer.TablePrinter(transactions);
+                                bankStaffService.RevertTransaction(bankId, accountId,transactionId);
                                 printer.ResponsePrinter("Transaction has been reversed");
                             }
                             catch (Exception ex)

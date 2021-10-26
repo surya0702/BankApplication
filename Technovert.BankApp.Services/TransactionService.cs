@@ -44,12 +44,8 @@ namespace Technovert.BankApp.Services
             {
                 Id = TransactionIdGenerator(bankId, accountHolderId),
                 Amount = amount,
-                Type = TransactionType.CASH,
-                On = today.ToString("g"),
-                SourceBankId = "SELF",
-                SourceAccountId = "SELF",
-                DestinationBankId = "SELF",
-                DestinationAccountId = "SELF"
+                TransactionType = TransactionType.Credit,
+                On = today.ToString("g")
             });
         }
 
@@ -72,12 +68,8 @@ namespace Technovert.BankApp.Services
             {
                 Id = TransactionIdGenerator(bankId, accountHolderId),
                 Amount = amount,
-                Type = TransactionType.CASH,
-                On = today.ToString("g"),
-                SourceBankId = "SELF",
-                SourceAccountId = "SELF",
-                DestinationBankId = "SELF",
-                DestinationAccountId = "SELF"
+                TransactionType = TransactionType.Credit,
+                On = today.ToString("g")
             });
         }
         public decimal TaxCalculator(string userBankId,string beneficiaryBankId,decimal amount)
@@ -99,22 +91,25 @@ namespace Technovert.BankApp.Services
             }
             return tax;
         }
-        public void Transfer(string userBankId, string userAccountId, decimal amount, string beneficiaryBankId, string beneficiaryAccountId,bool undo=false)
+        public void Transfer(string userBankId, string userAccountId, decimal amount, string beneficiaryBankId, string beneficiaryAccountId, TaxType taxType, bool undo = false)
         {
             this.accountHolder.InputValidator(userAccountId, beneficiaryAccountId, userBankId, beneficiaryBankId);
 
             Account userAccount = this.accountHolder.AccountFinder(userBankId, userAccountId);
 
             Account beneficiaryAccount = this.accountHolder.AccountFinder(beneficiaryBankId, beneficiaryAccountId);
-
-            decimal tax = 0;
-            if (undo == false)
-            {
-                tax = TaxCalculator(userBankId, beneficiaryBankId, amount);
-            }
             
             if (userAccount == null || beneficiaryAccount == null)
                 throw new InvalidAccountNameException();
+
+            if (undo == true)
+            {
+                userAccount.Balance += amount;
+                beneficiaryAccount.Balance -= amount;
+                return;
+            }
+
+            decimal tax = TaxCalculator(userBankId, beneficiaryBankId, amount);
 
             if (userAccount.Balance < amount+tax)
                 throw new InsufficientFundsException();
@@ -124,13 +119,14 @@ namespace Technovert.BankApp.Services
             {
                 Id = TransactionIdGenerator(userBankId, userAccountId),
                 Amount = amount,
-                Type = amount > limit ? TransactionType.IMPS : TransactionType.RTGS,
+                TransactionType = TransactionType.Debit,
                 On = today.ToString("g"),
-                Tax=tax,
-                SourceBankId=userBankId,
-                SourceAccountId=userAccountId,
-                DestinationBankId=beneficiaryBankId,
-                DestinationAccountId=beneficiaryAccountId
+                Tax = tax,
+                TaxType = taxType,
+                SourceBankId = userBankId,
+                SourceAccountId = userAccountId,
+                DestinationBankId = beneficiaryBankId,
+                DestinationAccountId = beneficiaryAccountId
             });
 
             beneficiaryAccount.Balance += amount;
@@ -138,9 +134,10 @@ namespace Technovert.BankApp.Services
             {
                 Id = TransactionIdGenerator(beneficiaryBankId, beneficiaryAccountId),
                 Amount = amount,
-                Type = amount > limit ? TransactionType.IMPS : TransactionType.RTGS,
+                TransactionType = TransactionType.Credit,
                 On = today.ToString("g"),
-                Tax=tax,
+                Tax = tax,
+                TaxType = taxType,
                 DestinationBankId = userBankId,
                 DestinationAccountId = userAccountId,
                 SourceBankId = beneficiaryBankId,

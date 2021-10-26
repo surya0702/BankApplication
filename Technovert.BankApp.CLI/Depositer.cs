@@ -17,8 +17,6 @@ namespace Technovert.BankApp.CLI
             code = Console.ReadLine();
             Console.Write("Please Enter the amount to be Deposited : ");
             amount = Convert.ToDecimal(Console.ReadLine());
-           /* CurrencyConverter currencyConverter = new CurrencyConverter();
-            Console.WriteLine("Exchange rate is : "+ currencyConverter.GetExchangeRate(code, "INR",(float)amount));*/
             try
             {
                 transactionService.Deposit(bankId, accountId, amount,code); // Deposited the amount into user's Account

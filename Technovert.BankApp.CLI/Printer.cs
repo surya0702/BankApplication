@@ -15,26 +15,31 @@ namespace Technovert.BankApp
             Console.WriteLine("| " + description + " |");
             Console.WriteLine("|" + line + "|\n");
         }
-        public string TablePrinter(List<Transaction> transactions)
+        public string TablePrinter(List<Transaction> transactions,bool revert=false)
         {
             int SerialNO=1;
-            Dictionary<string, string> transactionSNO = new Dictionary<string, string>();
+            Dictionary<int, string> transactionSNO = new Dictionary<int, string>();
             string line = new string('-', 158);
             Console.WriteLine(line);
-            Console.WriteLine($"|{"Transaction Id",40}|{"Amount",8}|{"Transaction Type",18}|{"Tax Type",10}|{"Tax",6}|{"SourceBankId",17}|{"SourceAccountId",20}|{"DestinationBankId",21}|{"DestinationAccountId",22}|{"On",22}|");
+            Console.WriteLine($"|{"Transaction Id",40}|{"Amount",8}|{"Transaction Type",18}|{"Tax Type",10}|{"Tax",6}|{"SourceAccountId",20}|{"DestinationAccountId",22}|{"On",22}|");
             Console.WriteLine(line);
             foreach (var d in transactions)
             {
-                if (d.Tax==0)
+                if (d.TaxType==TaxType.None && revert==true)
                 {
                     continue;
                 }
-                transactionSNO.Add(SerialNO.ToString(),d.Id);
-                Console.WriteLine($"|{d.Id,40}|{d.Amount,8}|{d.TransactionType,18}|{d.TaxType,10}|{d.Tax,6}|{d.SourceBankId,17}|{d.SourceAccountId,20}|{d.DestinationBankId,21}|{d.DestinationAccountId,22}|{d.On,22}|");
+                transactionSNO.Add(SerialNO,d.Id);
+                Console.WriteLine($"|{d.Id,40}|{d.Amount,8}|{d.TransactionType,18}|{d.TaxType,10}|{d.Tax,6}|{d.SourceAccountId,20}|{d.DestinationAccountId,22}|{d.On,22}|");
+                SerialNO += 1;
             }
             Console.WriteLine(line);
+            if (revert == false)
+            {
+                return "";
+            }
             Console.Write("\nEnter the S.No Corresponding to the Transaction Id which you would like to Revert : ");
-            string Sno = Console.ReadLine();
+            int Sno = Convert.ToInt32(Console.ReadLine());
             try
             {
                 return transactionSNO[Sno];

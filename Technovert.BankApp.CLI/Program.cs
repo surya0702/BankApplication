@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using Technovert.BankApp.Services;
 using Technovert.BankApp.Models.Exceptions;
+using System.Linq;
+using System.Net;
+using Newtonsoft.Json;
+using Technovert.BankApp.Models;
 
 namespace Technovert.BankApp.CLI
 {
@@ -11,11 +15,14 @@ namespace Technovert.BankApp.CLI
         {
             BankStaffService bankStaffService = new BankStaffService();
             Data data = new Data();
+            CurrencyConverter currencyConverter = new CurrencyConverter(data);
             BankService bankService = new BankService(data);
             AccountHolderService accountHolderService = new AccountHolderService(bankService);
-            TransactionService transactionService = new TransactionService(data,accountHolderService);
+            TransactionService transactionService = new TransactionService(data,accountHolderService,currencyConverter);
 
             bankStaffService.CreateStaffAccount("Admin");
+
+            currencyConverter.CurrencyExchange();
 
             bankService.CreateBank("SBI");
             bankService.CreateBank("YesBank");

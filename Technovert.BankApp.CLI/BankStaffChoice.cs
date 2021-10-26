@@ -28,11 +28,18 @@ namespace Technovert.BankApp.CLI
                             name = Console.ReadLine();
                             Console.Write("Enter the Name of the bank in which the account holder wants to Create an account : ");
                             bankName = Console.ReadLine();
-                            string[] response=bankStaffService.CreateAccount(name,bankName);
-                            string newId = response[0], password = response[1];
-                            printer.ResponsePrinter("Credentials for newly Created Account are");
-                            Console.WriteLine("\nAccount Id : "+ newId);
-                            Console.WriteLine("Password is : " + password);
+                            try
+                            {
+                                string[] response = bankStaffService.CreateAccount(name, bankName);
+                                string newId = response[0], password = response[1];
+                                printer.ResponsePrinter("Credentials for newly Created Account are");
+                                Console.WriteLine("\nAccount Id : " + newId);
+                                Console.WriteLine("Password is : " + password);
+                            }
+                            catch(Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
                             break;
                         }
                     case "Update Account":
@@ -130,7 +137,8 @@ namespace Technovert.BankApp.CLI
                             {
                                 List<Transaction> transactions = bankStaffService.ViewTransactions(bankId, accountId);
                                 printer.ResponsePrinter("Transaction Log");
-                                string transactionId = printer.TablePrinter(transactions);
+                                string transactionId = printer.TablePrinter(transactions,true);
+                                Console.WriteLine(transactionId);
                                 bankStaffService.RevertTransaction(bankId, accountId,transactionId);
                                 printer.ResponsePrinter("Transaction has been reversed");
                             }
@@ -161,7 +169,7 @@ namespace Technovert.BankApp.CLI
                             bankId = Console.ReadLine();
                             Console.Write("Enter the Account Id : ");
                             accountId = Console.ReadLine();
-                            Account account=bankStaffService.ViewAccountDetails(bankId, accountId);
+                            Account account = bankStaffService.ViewAccountDetails(bankId, accountId);
                             Console.WriteLine("\nName : " + account.Name);
                             Console.WriteLine("Id : " + account.Id);
                             Console.WriteLine("Password : " + account.Password);

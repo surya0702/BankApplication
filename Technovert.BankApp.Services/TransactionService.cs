@@ -13,15 +13,16 @@ namespace Technovert.BankApp.Services
         DateTime today = DateTime.Today;
         private AccountHolderService accountHolder;
         private Data data;
-        TransactionCharges charges = new TransactionCharges();
-        public TransactionService(Data data ,AccountHolderService accountHolder)
+        private CurrencyConverter currencyConverter;
+        public TransactionService(Data data ,AccountHolderService accountHolder,CurrencyConverter currencyConverter)
         {
             this.data = data;
             this.accountHolder = accountHolder;
+            this.currencyConverter = currencyConverter;
         }
         public string TransactionIdGenerator(string bankId, string accountId)
         {
-            return "TXN" + bankId + accountId + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy") + today.ToString("hh") + today.ToString("mm");
+            return "TXN" + bankId + accountId + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy") + today.ToString("hh") + today.ToString("mm")+ today.ToString("ss");
         }
         
         public void Deposit(string bankId, string accountHolderId, decimal amount,string code)
@@ -29,7 +30,7 @@ namespace Technovert.BankApp.Services
             this.accountHolder.InputValidator(bankId, accountHolderId);
 
             Account userAccount = accountHolder.AccountFinder(bankId, accountHolderId);
-            Currency currentCurrency = this.data.currencies.SingleOrDefault(x => x.Code == code);
+            Currency currentCurrency = this.data.currencies.SingleOrDefault(x => x.code == code);
             if (currentCurrency == null)
             {
                 throw new InvalidCurrencyException();
@@ -38,14 +39,16 @@ namespace Technovert.BankApp.Services
             {
                 throw new InvalidAccountNameException();
             }
-            CurrencyConverter currencyConverter = new CurrencyConverter();
-            userAccount.Balance += currencyConverter.Converter(amount,currentCurrency.ExchangeRate);
+            amount = currencyConverter.Converter(amount, currentCurrency.exchangeRate);
+            amount = Math.Round(amount, 2);
+            userAccount.Balance += amount;
             userAccount.Transactions.Add(new Transaction()
             {
                 Id = TransactionIdGenerator(bankId, accountHolderId),
                 Amount = amount,
                 TransactionType = TransactionType.Credit,
-                On = today.ToString("g")
+                On = today.ToString("g"),
+                TaxType=TaxType.None
             });
         }
 
@@ -63,35 +66,45 @@ namespace Technovert.BankApp.Services
             {
                 throw new InsufficientFundsException();
             }
+            amount = Math.Round(amount, 2);
             userAccount.Balance -= amount;
             userAccount.Transactions.Add(new Transaction()
             {
                 Id = TransactionIdGenerator(bankId, accountHolderId),
                 Amount = amount,
-                TransactionType = TransactionType.Credit,
-                On = today.ToString("g")
+                TransactionType = TransactionType.Debit,
+                On = today.ToString("g"),
+                TaxType=TaxType.None
             });
         }
-        public decimal TaxCalculator(string userBankId,string beneficiaryBankId,decimal amount)
+        public decimal TaxCalculator(string userBankId,string beneficiaryBankId,decimal amount,TaxType taxType)
         {
             decimal tax = 0;
-            if (amount > limit)
+            if (taxType == TaxType.IMPS)
             {
-                if (userBankId != beneficiaryBankId)
-                    tax = amount * charges.DifferentBankIMPS / 100;
+                if (userBankId == beneficiaryBankId)
+                {
+                    tax = amount * (int)IMPSCharges.SameBank;
+                }
                 else
-                    tax = amount * charges.SameBankIMPS / 100;
+                {
+                    tax = amount * (int)IMPSCharges.DifferentBank;
+                }
             }
             else
             {
-                if (userBankId != beneficiaryBankId)
-                    tax = amount * charges.DifferentBankRTGS / 100;
+                if (userBankId == beneficiaryBankId)
+                {
+                    tax = amount * (int)RTGSCharges.SameBank;
+                }
                 else
-                    tax = amount * charges.SameBankRTGS / 100;
+                {
+                    tax = amount * (int)RTGSCharges.DifferentBank;
+                }
             }
-            return tax;
+            return tax/100;
         }
-        public void Transfer(string userBankId, string userAccountId, decimal amount, string beneficiaryBankId, string beneficiaryAccountId, TaxType taxType, bool undo = false)
+        public void Transfer(string userBankId, string userAccountId, decimal amount, string beneficiaryBankId, string beneficiaryAccountId, TaxType taxType)
         {
             this.accountHolder.InputValidator(userAccountId, beneficiaryAccountId, userBankId, beneficiaryBankId);
 
@@ -102,22 +115,19 @@ namespace Technovert.BankApp.Services
             if (userAccount == null || beneficiaryAccount == null)
                 throw new InvalidAccountNameException();
 
-            if (undo == true)
-            {
-                userAccount.Balance += amount;
-                beneficiaryAccount.Balance -= amount;
-                return;
-            }
-
-            decimal tax = TaxCalculator(userBankId, beneficiaryBankId, amount);
+            amount = Math.Round(amount, 2);
+            decimal tax = TaxCalculator(userBankId, beneficiaryBankId, amount,taxType);
+            tax = Math.Round(tax, 2);
 
             if (userAccount.Balance < amount+tax)
                 throw new InsufficientFundsException();
 
+            string transactionId = TransactionIdGenerator(userBankId, userAccountId);
+
             userAccount.Balance -= amount+tax;
             userAccount.Transactions.Add(new Transaction()
             {
-                Id = TransactionIdGenerator(userBankId, userAccountId),
+                Id = transactionId,
                 Amount = amount,
                 TransactionType = TransactionType.Debit,
                 On = today.ToString("g"),
@@ -132,7 +142,7 @@ namespace Technovert.BankApp.Services
             beneficiaryAccount.Balance += amount;
             beneficiaryAccount.Transactions.Add(new Transaction()
             {
-                Id = TransactionIdGenerator(beneficiaryBankId, beneficiaryAccountId),
+                Id = transactionId,
                 Amount = amount,
                 TransactionType = TransactionType.Credit,
                 On = today.ToString("g"),
@@ -147,6 +157,7 @@ namespace Technovert.BankApp.Services
 
         public List<Transaction> TransactionHistory(string bankId,string accountId)
         {
+            this.accountHolder.InputValidator(bankId, accountId);
             Account account = this.accountHolder.AccountFinder(bankId, accountId);
             if (account == null)
             {
@@ -156,6 +167,7 @@ namespace Technovert.BankApp.Services
         }
         public decimal ViewBalance(string bankId, string accountId)
         {
+            this.accountHolder.InputValidator(bankId, accountId);
             Account account = this.accountHolder.AccountFinder(bankId, accountId);
             if (account == null)
             {

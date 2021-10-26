@@ -42,6 +42,7 @@ namespace Technovert.BankApp.Services
         }
         public string[] CreateAccount(string name,string bankId)
         {
+            accountHolderService.InputValidator(name, bankId);
             Account newAccount = new Account()
             {
                 Name = name,
@@ -57,10 +58,7 @@ namespace Technovert.BankApp.Services
         }
         public void Login(Data data, BankService bankService, AccountHolderService accountHolderService, TransactionService transactionService, string id,string password)
         {
-            if(String.IsNullOrWhiteSpace(id) || String.IsNullOrWhiteSpace(password))
-            {
-                throw new InvalidInputException();
-            }
+            accountHolderService.InputValidator(id, password);
             StaffAccount staffAccount = this.staff.SingleOrDefault(x => x.Id == id);
             if (staffAccount == null)
             {
@@ -74,9 +72,11 @@ namespace Technovert.BankApp.Services
             this.bankService = bankService;
             this.accountHolderService = accountHolderService;
             this.transactionService = transactionService;
+
         }
         public Account ViewAccountDetails(string bankId,string accountId)
         {
+            this.accountHolderService.InputValidator(bankId, accountId);
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
             if (account == null)
             {
@@ -86,16 +86,18 @@ namespace Technovert.BankApp.Services
         }
         public void AddNewCurrency(string name,string code,decimal exchangeRate)
         {
+            this.accountHolderService.InputValidator(name, code, exchangeRate.ToString());
             Currency newCurrency = new Currency()
             {
-                Name = name,
-                Code = code,
-                ExchangeRate = exchangeRate
+                name = name,
+                code = code,
+                exchangeRate = exchangeRate
             };
             this.data.currencies.Add(newCurrency);
         }
         public void UpdateAccount(string accountId,string bankId,string newName=null,string newPassword=null)
         {
+            this.accountHolderService.InputValidator(accountId, bankId);
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
             if (account == null)
             {
@@ -112,6 +114,7 @@ namespace Technovert.BankApp.Services
         }
         public void DeleteAccount(string accountId,string bankId)
         {
+            this.accountHolderService.InputValidator(accountId, bankId);
             Bank bank = this.bankService.BankFinder(bankId);
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
             if (account == null)
@@ -122,6 +125,7 @@ namespace Technovert.BankApp.Services
         }
         public List<Transaction> ViewTransactions(string bankId,string accountId)
         {
+            this.accountHolderService.InputValidator(accountId, bankId);
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
             if (account == null)
             {
@@ -131,6 +135,7 @@ namespace Technovert.BankApp.Services
         }
         public void RevertTransaction(string bankId,string accountId,string transactionId)
         {
+            this.accountHolderService.InputValidator(accountId, bankId,transactionId);
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
             if (account == null)
             {
@@ -147,10 +152,14 @@ namespace Technovert.BankApp.Services
                 throw new InvalidInputException();
             }
             transaction.Remove(undoTransaction);
-            if (undoTransaction.TaxType ==TaxType.IMPS || undoTransaction.TaxType==TaxType.RTGS)
-            {
-                this.transactionService.Transfer(undoTransaction.DestinationBankId, undoTransaction.DestinationAccountId, undoTransaction.Amount, undoTransaction.SourceBankId, undoTransaction.SourceAccountId,undoTransaction.TaxType,true);
-            }
+
+            Account beneficiaryAccount = this.accountHolderService.AccountFinder(undoTransaction.DestinationBankId, undoTransaction.DestinationAccountId);
+            List<Transaction> beneficiarytransaction = beneficiaryAccount.Transactions;
+            Transaction beneficiaryUndoTransaction = beneficiarytransaction.SingleOrDefault(x => x.Id == transactionId);
+            beneficiarytransaction.Remove(beneficiaryUndoTransaction);
+
+            beneficiaryAccount.Balance -= undoTransaction.Amount;
+            account.Balance += undoTransaction.Amount;
         }
     }
 }

@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Technovert.BankApp.Models.Enums
 {
-    public enum TaxType
+    public enum RTGSCharges
     {
-        IMPS,
-        RTGS,
-        None
+        SameBank = 0,
+        DifferentBank = 2
     }
 }

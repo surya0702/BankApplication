@@ -8,6 +8,6 @@ namespace Technovert.BankApp.Models
         public string Name { get; set; }
         public string Id { get; set; }
         public List<Account> Accounts { get; set; }
-        public TransactionCharges Charges { get; set; }
+        public IMPSCharges Charges { get; set; }
     }
 }

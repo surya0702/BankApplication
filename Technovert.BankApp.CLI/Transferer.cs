@@ -22,10 +22,8 @@ namespace Technovert.BankApp.CLI
             Console.Write("Enter the amount to be transfered in INR : ");
             amount = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine("Available Tax Charges for Transaction are : ");
-            TransactionCharges transactionCharges = new TransactionCharges();
-            Console.WriteLine("For Same Bank ->  IMPS : " + transactionCharges.SameBankIMPS + "  RTGS : " + transactionCharges.SameBankRTGS);
-            Console.WriteLine("For Different Bank ->  IMPs : " + transactionCharges.DifferentBankIMPS + "  RTGS : " + transactionCharges.DifferentBankRTGS);
-            Console.Write("Enter the Tax Type in which you would like to transfer the money : ");
+            Console.WriteLine("\n1. IMPS\n2. RTGS");
+            Console.Write("\nEnter the Tax Type in which you would like to transfer the money : ");
             string tax = Console.ReadLine();
             TaxType taxType = (TaxType)Convert.ToInt32(tax);
             try

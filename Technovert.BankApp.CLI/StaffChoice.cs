@@ -163,20 +163,6 @@ namespace Technovert.BankApp.CLI
                             printer.ResponsePrinter("New Currency has been Added");
                             break;
                         }
-                    case "View Account Details":
-                        {
-                            string accountId, bankId;
-                            Console.Write("Enter the Bank Id in which the account exists : ");
-                            bankId = Console.ReadLine();
-                            Console.Write("Enter the Account Id : ");
-                            accountId = Console.ReadLine();
-                            Account account = bankStaffService.ViewAccountDetails(bankId, accountId);
-                            Console.WriteLine("\nName : " + account.Name);
-                            Console.WriteLine("Id : " + account.Id);
-                            Console.WriteLine("Password : " + account.Password);
-                            Console.WriteLine("Balance : " + account.Balance);
-                            break;
-                        }
                     case "LogOut":
                         {
                             printer.ResponsePrinter("Logged Out");

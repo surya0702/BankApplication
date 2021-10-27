@@ -11,6 +11,7 @@ namespace Technovert.BankApp.Services
     public class AccountHolderService
     {
         private BankService bankService;
+        private HashingService hashing = new HashingService();
         public AccountHolderService(BankService bankService)
         {
             this.bankService = bankService;
@@ -30,6 +31,12 @@ namespace Technovert.BankApp.Services
         public Account AccountFinder(string bankId, string accountId) // Returns the user account based on bankid and accountid
         {
             Bank bank = this.bankService.BankFinder(bankId);
+
+            if (bank == null)
+            {
+                throw new InvalidBankNameException();
+            }
+
             return bank.Accounts.SingleOrDefault(x => x.Id == accountId);
         }
         
@@ -43,7 +50,7 @@ namespace Technovert.BankApp.Services
             {
                 throw new InvalidAccountNameException();
             }
-            if (userAccount.Password != password)
+            if (userAccount.Password != hashing.GetSha1(password))
             {
                 throw new InvalidAccountPasswordException();
             }

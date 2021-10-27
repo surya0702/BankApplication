@@ -5,6 +5,6 @@ namespace Technovert.BankApp.Models
     {
         public string code { get; set; }
         public string name { get; set; }
-        public decimal exchangeRate { get; set; }
+        public decimal inverseRate { get; set; }
     }
 }

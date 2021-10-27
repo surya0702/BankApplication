@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using Technovert.BankApp.Models;
 using Technovert.BankApp.Models.Exceptions;
@@ -6,6 +7,7 @@ using Technovert.BankApp.Models.Enums;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
+using System.Security.Cryptography;
 
 namespace Technovert.BankApp.Services
 {
@@ -13,14 +15,16 @@ namespace Technovert.BankApp.Services
     public class BankService
     {
         private Data data;
+        private HashingService hashing = new HashingService();
         public BankService(Data data)
         {
             this.data = data;
         }
-
+        
         public Bank BankFinder(string bankId) // Finds the bank using bankId in data
         {
-            return this.data.banks.SingleOrDefault(x => x.Id == bankId);
+            string bankIdHash = hashing.GetSha1(bankId);
+            return this.data.banks.SingleOrDefault(x => x.Id == bankIdHash);
         }
 
         public void CreateBank(string bankName) // Creates a new Bank and adds the bank to data
@@ -32,7 +36,7 @@ namespace Technovert.BankApp.Services
             Bank newBank = new Bank()
             {
                 Name = bankName,
-                Id = bankName,
+                Id = hashing.GetSha1(bankName),
                 Accounts = new List<Account>()
             };
             this.data.banks.Add(newBank);
@@ -44,7 +48,9 @@ namespace Technovert.BankApp.Services
             {
                 throw new InvalidInputException();
             }
+
             Bank currentBank = BankFinder(bankId);
+
             if (currentBank == null)
             {
                 throw new InvalidBankNameException();

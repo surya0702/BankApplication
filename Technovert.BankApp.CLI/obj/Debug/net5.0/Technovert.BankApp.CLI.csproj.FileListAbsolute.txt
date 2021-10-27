@@ -19,4 +19,3 @@ C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\obj\Debug\
 C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\obj\Debug\net5.0\Technovert.BankApp.CLI.pdb
 C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\obj\Debug\net5.0\Technovert.BankApp.CLI.genruntimeconfig.cache
 C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\bin\Debug\net5.0\Newtonsoft.Json.dll
-C:\Users\surya\source\repos\Technovert.BankApp\Technovert.BankApp.CLI\obj\Debug\net5.0\Technovert.BankApp.CLI.csproj.CopyComplete

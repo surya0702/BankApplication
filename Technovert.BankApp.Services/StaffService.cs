@@ -20,6 +20,7 @@ namespace Technovert.BankApp.Services
         private BankService bankService;
         private AccountHolderService accountHolderService;
         private TransactionService transactionService;
+        private HashingService hashing = new HashingService();
 
         public StaffService()
         {
@@ -40,8 +41,8 @@ namespace Technovert.BankApp.Services
             StaffAccount newStaff = new StaffAccount()
             {
                 Name = name,
-                Password = name + "@123",
-                Id = name
+                Password = hashing.GetSha1(name + "@123"),
+                Id = hashing.GetSha1(name)
             };
             this.staff.Add(newStaff);
         }
@@ -49,49 +50,45 @@ namespace Technovert.BankApp.Services
         public string[] CreateAccount(string name,string bankId) // Creates a new user account in a bank containing bankId
         {
             accountHolderService.InputValidator(name, bankId);
+            string newPassword = GeneratePassword(name);
+
             Account newAccount = new Account()
             {
                 Name = name,
                 Id = AccountIdGenerator(name),
-                Password = GeneratePassword(name),
+                Password = hashing.GetSha1(newPassword),
                 Balance = 0,
                 Transactions = new List<Transaction>()
             };
+
             Bank bank = this.bankService.BankFinder(bankId);
             bank.Accounts.Add(newAccount);
 
-            return new string[]{ newAccount.Id, newAccount.Password}; // Returns the newly created user id and password for user
+            return new string[]{ newAccount.Id, newPassword}; // Returns the newly created user id and password for user
         }
 
         public void Login(Data data, BankService bankService, AccountHolderService accountHolderService, TransactionService transactionService, string id,string password)
         { // Logs the staff into their accounts
 
             accountHolderService.InputValidator(id, password);
-            StaffAccount staffAccount = this.staff.SingleOrDefault(x => x.Id == id);
+
+            string idHash = hashing.GetSha1(id);
+            StaffAccount staffAccount = this.staff.SingleOrDefault(x => x.Id == idHash);
+
             if (staffAccount == null)
             {
                 throw new InvalidAccountNameException();
             }
-            if (staffAccount.Password != password)
+            if (staffAccount.Password != hashing.GetSha1(password))
             {
                 throw new InvalidAccountPasswordException();
             }
+
             this.data = data;
             this.bankService = bankService;
             this.accountHolderService = accountHolderService;
             this.transactionService = transactionService;
 
-        }
-
-        public Account ViewAccountDetails(string bankId,string accountId) // Returns the account details of user
-        {
-            this.accountHolderService.InputValidator(bankId, accountId);
-            Account account = this.accountHolderService.AccountFinder(bankId, accountId);
-            if (account == null)
-            {
-                throw new InvalidAccountNameException(); 
-            }
-            return account;
         }
 
         public void AddNewCurrency(string name,string code,decimal exchangeRate) // used to add new currencies into the application
@@ -101,7 +98,7 @@ namespace Technovert.BankApp.Services
             {
                 name = name,
                 code = code,
-                exchangeRate = exchangeRate
+                inverseRate = exchangeRate
             };
             this.data.currencies.Add(newCurrency);
         }
@@ -110,6 +107,7 @@ namespace Technovert.BankApp.Services
         {// Updates the user account with either newName or newPassword
             this.accountHolderService.InputValidator(accountId, bankId);
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
+
             if (account == null)
             {
                 throw new InvalidAccountNameException(); // Invalid?!
@@ -120,15 +118,17 @@ namespace Technovert.BankApp.Services
             }
             if (newPassword != null)
             {
-                account.Password = newPassword;
+                account.Password = hashing.GetSha1(newPassword);
             }
         }
 
         public void DeleteAccount(string accountId,string bankId)// Deletes the account from the respective bank
         {
             this.accountHolderService.InputValidator(accountId, bankId);
+
             Bank bank = this.bankService.BankFinder(bankId);
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
+
             if (account == null)
             {
                 throw new InvalidAccountNameException();
@@ -140,6 +140,7 @@ namespace Technovert.BankApp.Services
         {
             this.accountHolderService.InputValidator(accountId, bankId);
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
+
             if (account == null)
             {
                 throw new InvalidAccountNameException();
@@ -151,15 +152,18 @@ namespace Technovert.BankApp.Services
         { // Reverts any Transaction done by the account holder
             this.accountHolderService.InputValidator(accountId, bankId,transactionId);
             Account account = this.accountHolderService.AccountFinder(bankId, accountId);
+
             if (account == null)
             {
                 throw new InvalidAccountNameException();
             }
+
             List<Transaction> transaction=account.Transactions;
             if (transaction.Count == 0)
             {
                 throw new InsufficientTransactions();
             }
+
             Transaction undoTransaction = transaction.SingleOrDefault(x => x.Id == transactionId);
             if (undoTransaction == null)
             {

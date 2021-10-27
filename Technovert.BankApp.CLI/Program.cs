@@ -22,8 +22,6 @@ namespace Technovert.BankApp.CLI
 
             bankStaffService.CreateStaffAccount("Admin"); // Default Staff Account , Id : Admin , Password : Admin@123
 
-            currencyConverter.CurrencyExchange(); // Adds the default accepted currencies into the Application
-
             bankService.CreateBank("SBI"); // Default banks
             bankService.CreateBank("YesBank");
             bankService.CreateBank("HDFC");

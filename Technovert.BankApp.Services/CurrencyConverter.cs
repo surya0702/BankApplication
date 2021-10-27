@@ -20,6 +20,7 @@ namespace Technovert.BankApp.Services
         public CurrencyConverter(Data data)
         {
             this.data = data;
+            CurrencyExchange();  // Adds the default accepted currencies into the Application
         }
 
         public decimal Converter(decimal amount,decimal exchangeRate) // Converts the amount into INR using exchange rate
@@ -34,19 +35,11 @@ namespace Technovert.BankApp.Services
             {
                 string url = "http://www.floatrates.com/daily/inr.json";
                 string json = new WebClient().DownloadString(url);
-                var currency = JsonConvert.DeserializeObject<dynamic>(json);
-                this.data.currencies.Add(new Currency()
+                var currencies = JsonConvert.DeserializeObject<Dictionary<string, Currency>>(json);
+                foreach(var currency in currencies)
                 {
-                    code = currency.usd.code,
-                    name = currency.usd.name,
-                    exchangeRate = currency.usd.inverseRate
-                });
-                this.data.currencies.Add(new Currency()
-                {
-                    code = currency.eur.code,
-                    name = currency.eur.name,
-                    exchangeRate = currency.eur.inverseRate
-                });
+                    this.data.currencies.Add(currency.Value);
+                }
             }
             catch { }
         }

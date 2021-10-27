@@ -24,9 +24,14 @@ namespace Technovert.BankApp.Services
             this.currencyConverter = currencyConverter;
         }
 
+        public string CurrentTime()
+        {
+            return today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy") + today.ToString("hh") + DateTime.Now.ToString("HH") + DateTime.Now.ToString("mm") + DateTime.Now.ToString("ss");
+        }
+
         public string TransactionIdGenerator(string bankId, string accountId) // Generates a unique transaction id for each transaction done by account holder
         {
-            return "TXN" + bankId + accountId + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy") + today.ToString("hh") + today.ToString("mm")+ today.ToString("ss");
+            return "TXN" + bankId + accountId + CurrentTime();
         }
         
         public void Deposit(string bankId, string accountHolderId, decimal amount,string code) // Deposits the amount into account holder account
@@ -35,6 +40,7 @@ namespace Technovert.BankApp.Services
 
             Account userAccount = accountHolder.AccountFinder(bankId, accountHolderId);
             Currency currentCurrency = this.data.currencies.SingleOrDefault(x => x.code == code);
+
             if (currentCurrency == null)
             {
                 throw new InvalidCurrencyException();
@@ -43,7 +49,8 @@ namespace Technovert.BankApp.Services
             {
                 throw new InvalidAccountNameException();
             }
-            amount = currencyConverter.Converter(amount, currentCurrency.exchangeRate);
+
+            amount = currencyConverter.Converter(amount, currentCurrency.inverseRate);
             amount = Math.Round(amount, 2);
             userAccount.Balance += amount;
             userAccount.Transactions.Add(new Transaction()
@@ -51,7 +58,7 @@ namespace Technovert.BankApp.Services
                 Id = TransactionIdGenerator(bankId, accountHolderId),
                 Amount = amount,
                 TransactionType = TransactionType.Credit,
-                On = today.ToString("g"),
+                On = DateTime.Now.ToString(),
                 TaxType=TaxType.None
             });
         }
@@ -70,6 +77,7 @@ namespace Technovert.BankApp.Services
             {
                 throw new InsufficientFundsException();
             }
+
             amount = Math.Round(amount, 2);
             userAccount.Balance -= amount;
             userAccount.Transactions.Add(new Transaction()
@@ -77,7 +85,7 @@ namespace Technovert.BankApp.Services
                 Id = TransactionIdGenerator(bankId, accountHolderId),
                 Amount = amount,
                 TransactionType = TransactionType.Debit,
-                On = today.ToString("g"),
+                On = DateTime.Now.ToString(),
                 TaxType=TaxType.None
             });
         }
@@ -114,6 +122,11 @@ namespace Technovert.BankApp.Services
         { // Transfers the amount from one account to another account
             this.accountHolder.InputValidator(userAccountId, beneficiaryAccountId, userBankId, beneficiaryBankId);
 
+            if(userBankId==beneficiaryBankId && userAccountId == beneficiaryAccountId)
+            {
+                throw new Exception("Self Transfer is not Allowed!");
+            }
+
             Account userAccount = this.accountHolder.AccountFinder(userBankId, userAccountId);
 
             Account beneficiaryAccount = this.accountHolder.AccountFinder(beneficiaryBankId, beneficiaryAccountId);
@@ -136,7 +149,7 @@ namespace Technovert.BankApp.Services
                 Id = transactionId,
                 Amount = amount,
                 TransactionType = TransactionType.Debit,
-                On = today.ToString("g"),
+                On = DateTime.Now.ToString(),
                 Tax = tax,
                 TaxType = taxType,
                 SourceBankId = userBankId,
@@ -151,13 +164,13 @@ namespace Technovert.BankApp.Services
                 Id = transactionId,
                 Amount = amount,
                 TransactionType = TransactionType.Credit,
-                On = today.ToString("g"),
+                On = DateTime.Now.ToString(),
                 Tax = tax,
                 TaxType = taxType,
-                DestinationBankId = userBankId,
-                DestinationAccountId = userAccountId,
-                SourceBankId = beneficiaryBankId,
-                SourceAccountId = beneficiaryAccountId
+                SourceBankId = userBankId,
+                SourceAccountId = userAccountId,
+                DestinationBankId = beneficiaryBankId,
+                DestinationAccountId = beneficiaryAccountId
             });
         }
 
@@ -165,6 +178,7 @@ namespace Technovert.BankApp.Services
         { // returns the transactions done by the account holder
             this.accountHolder.InputValidator(bankId, accountId);
             Account account = this.accountHolder.AccountFinder(bankId, accountId);
+
             if (account == null)
             {
                 throw new InvalidAccountNameException();
@@ -176,6 +190,7 @@ namespace Technovert.BankApp.Services
         { // returns the balance available in account
             this.accountHolder.InputValidator(bankId, accountId);
             Account account = this.accountHolder.AccountFinder(bankId, accountId);
+
             if (account == null)
             {
                 throw new InvalidAccountNameException();

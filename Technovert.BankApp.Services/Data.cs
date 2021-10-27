@@ -15,7 +15,7 @@ namespace Technovert.BankApp.Services
         {
             this.banks = new List<Bank>();
             this.currencies = new List<Currency>();
-            this.currencies.Add(new Currency() { code = "INR", name = "Rupee", exchangeRate = 1 });
+            this.currencies.Add(new Currency() { code = "INR", name = "Rupee", inverseRate = 1 });
         }
     }
 }

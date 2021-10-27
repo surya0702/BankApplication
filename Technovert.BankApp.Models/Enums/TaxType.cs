@@ -9,8 +9,8 @@ namespace Technovert.BankApp.Models.Enums
     // Types of available taxes
     public enum TaxType
     {
+        None,
         IMPS,
-        RTGS,
-        None
+        RTGS
     }
 }

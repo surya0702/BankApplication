@@ -1,4 +1,4 @@
-﻿
+
 namespace Technovert.BankApp.Models
 {
     public class Currency

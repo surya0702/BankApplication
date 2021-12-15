@@ -15,8 +15,6 @@ namespace Technovert.BankApp.CLI
     {
         static void Main()
         {
-            //SqlConnection conn = new SqlConnection("Server=LAPTOP-SURYA;Database=DemoDB;Trusted_Connection=True");
-
             CurrencyConverter currencyConverter = new CurrencyConverter();
             BankDbContext DbContext = new BankDbContext();
             BankService bankService = new BankService(DbContext);

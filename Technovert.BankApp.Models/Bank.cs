@@ -11,7 +11,5 @@ namespace Technovert.BankApp.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        /*public List<Account> Accounts { get; set; }
-        public IMPSCharges Charges { get; set; }*/
     }
 }

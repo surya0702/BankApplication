@@ -15,6 +15,6 @@ namespace Technovert.BankApp.Models
         public int Age { get; set; }
         public string Gender { get; set; }
         public string BankId { get; set; }
-        /*public List<Transaction> Transactions { get; set; }*/
+        public string AccountStatus { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Technovert.BankApp.Services;
-using Technovert.BankApp.Models.Exceptions;
 
 namespace Technovert.BankApp.CLI
 {

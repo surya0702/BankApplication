@@ -30,7 +30,7 @@ namespace Technovert.BankApp.CLI
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.Message);
             }
         }
     }

@@ -20,5 +20,6 @@ namespace Technovert.BankApp.Models
         public string TransactionType { get; set; }
         public string TaxType { get; set; }
         public DateTime OnTime { get; set; }
+        public string TxnStatus { get; set; }
     }
 }

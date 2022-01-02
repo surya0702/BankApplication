@@ -29,7 +29,8 @@ namespace Technovert.BankApp
             {
                 if (revert == true && transaction.TaxType == null)
                     continue;
-
+                if (revert == true && transaction.TxnStatus == "Reversed")
+                    continue;
                 Console.WriteLine(index+" | "+transaction.Id + " | " + transaction.DestinationBankId + " | " + transaction.DestinationAccountId + " | " + transaction.Amount + " | " + transaction.TaxAmount + " | " + transaction.TransactionType + " | " + transaction.TaxType + " | " + transaction.OnTime) ;
 
                 transactionToBeRevert.Add(transaction.Id);
@@ -48,8 +49,7 @@ namespace Technovert.BankApp
             }
             catch
             {
-                Console.WriteLine("Enter a valid Serial Number");
-                return "";
+                throw new Exception("Enter a valid Serial Number");
             }
         }
     }

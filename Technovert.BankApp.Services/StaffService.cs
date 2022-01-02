@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Technovert.BankApp.Models;
-using Technovert.BankApp.Models.Exceptions;
 using Technovert.BankApp.Models.Enums;
 using System.Runtime.InteropServices;
 using System.Data;
@@ -22,7 +21,6 @@ namespace Technovert.BankApp.Services
         private AccountHolderService accountHolderService;
         private TransactionService transactionService;
         private HashingService hashing = new HashingService();
-        private SqlCommands commands = new SqlCommands();
         private BankDbContext DbContext ;
 
         public StaffService(BankDbContext dbContext)
@@ -32,7 +30,13 @@ namespace Technovert.BankApp.Services
 
         public string GeneratePassword(string name) // Generates a random password based on user's name
         {
-            return name.First().ToString().ToUpper() + name.Substring(1,4).ToLower().Trim()+"@"+rand.Next(1000,9999);
+            string temp = "";
+            foreach(var letter in name)
+            {
+                if (letter != ' ')
+                    temp += letter;
+            }
+            return temp.First().ToString().ToUpper() + temp.Substring(1,4).ToLower().Trim()+"@"+rand.Next(1000,9999);
         }
         public string AccountIdGenerator(string AccountHolderName) // Generates a account id for newly created account
         {
@@ -58,12 +62,10 @@ namespace Technovert.BankApp.Services
             {
                 throw new Exception(ex.Message);
             }
-            /*this.commands.createStaffAccount(name,newId,newPassword);*/
         }
 
         public string[] CreateAccount(string name,string bankId,int age,string gender) // Creates a new user account in a bank containing bankId
         {
-            accountHolderService.InputValidator(name, bankId);
             string newPassword = GeneratePassword(name);
             string newAccountId = AccountIdGenerator(name);
             try
@@ -76,7 +78,8 @@ namespace Technovert.BankApp.Services
                     Balance = 0,
                     BankId = bankId,
                     Age=age,
-                    Gender=gender
+                    Gender=gender,
+                    AccountStatus="Active"
                 };
                 DbContext.Accounts.Add(newUser);
                 DbContext.SaveChanges();
@@ -85,7 +88,6 @@ namespace Technovert.BankApp.Services
             {
                 throw new Exception(ex.Message);
             }
-            /*this.commands.createUserAccount(name, newAccountId, newPassword, bankId, age, gender);*/
             return new string[]{ newAccountId, newPassword}; // Returns the newly created user id and password for user
         }
 
@@ -114,7 +116,6 @@ namespace Technovert.BankApp.Services
 
         public void AddNewCurrency(string name,string code,decimal exchangeRate) // used to add new currencies into the application
         {
-            this.accountHolderService.InputValidator(name, code, exchangeRate.ToString());
             try
             {
                 var newCurrency = new Currency()
@@ -134,7 +135,6 @@ namespace Technovert.BankApp.Services
 
         public void UpdateAccount(string accountId,string bankId,string newName=null,string newPassword=null,int? newAge=0,string newGender=null)
         {// Updates the user account with either newName or newPassword
-            this.accountHolderService.InputValidator(accountId, bankId);
             try
             {
                 var info = DbContext.Accounts.SingleOrDefault(m => m.Id == accountId && m.BankId == bankId);
@@ -142,6 +142,8 @@ namespace Technovert.BankApp.Services
                 {
                     throw new Exception("Invalid Details");
                 }
+                if (info.AccountStatus == "Closed")
+                    throw new Exception("Account was Closed! Can't Update the Account Details");
                 if (newAge != 0)
                 {
                     info.Age = (int)newAge;
@@ -170,13 +172,14 @@ namespace Technovert.BankApp.Services
 
         public void DeleteAccount(string accountId,string bankId)// Deletes the account from the respective bank
         {
-            this.accountHolderService.InputValidator(accountId, bankId);
             try
             {
-                var info = DbContext.Accounts.SingleOrDefault(m => m.Id == accountId && m.BankId == bankId);
+                var info = DbContext.Accounts.SingleOrDefault(m => m.BankId == bankId && m.Id == accountId);
                 if (info == null)
                     throw new Exception("Invalid Details");
-                DbContext.Accounts.Remove(info);
+                if (info.AccountStatus == "Closed")
+                    throw new Exception("Account was already Closed!");
+                info.AccountStatus = "Closed";
                 DbContext.SaveChanges();
             }
             catch (Exception ex)
@@ -187,13 +190,10 @@ namespace Technovert.BankApp.Services
 
         public void RevertTransaction(string bankId,string accountId,string transactionId)
         { // Reverts any Transaction done by the account holder
-            
-
             try
             {
-                //this.accountHolderService.InputValidator(accountId, bankId, transactionId);
                 var userInfo = DbContext.Accounts.SingleOrDefault(m => m.BankId == bankId && m.Id == accountId);
-                if (userInfo == null)
+                if (userInfo == null || userInfo.AccountStatus=="Closed")
                     throw new Exception("User Account was not Available!");
 
                 var userTxn = DbContext.Transactions.SingleOrDefault(m => m.Id == transactionId && m.AccountId==accountId && m.BankId==bankId);
@@ -201,7 +201,7 @@ namespace Technovert.BankApp.Services
                     throw new Exception("Invalid Transaction Id!");
 
                 var beneInfo = DbContext.Accounts.SingleOrDefault(m => m.BankId == userTxn.DestinationBankId && m.Id == userTxn.DestinationAccountId);
-                if (beneInfo == null)
+                if (beneInfo == null || beneInfo.AccountStatus=="Closed")
                     throw new Exception("Beneficiary Account was not Available!");
 
                 string beneTxnId = "TXN" + userTxn.DestinationBankId + userTxn.DestinationAccountId + transactionId.Substring(29);
@@ -220,8 +220,8 @@ namespace Technovert.BankApp.Services
                     beneInfo.Balance += userTxn.Amount;
                 }
 
-                DbContext.Transactions.Remove(userTxn);
-                DbContext.Transactions.Remove(beneTxn);
+                userTxn.TxnStatus = "Reversed";
+                beneTxn.TxnStatus = "Reversed";
                 DbContext.SaveChanges();
             }
             catch (Exception ex)

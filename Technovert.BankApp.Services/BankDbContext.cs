@@ -19,20 +19,19 @@ namespace Technovert.BankApp.Services
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=BankAppDB;Integrated Security=True");
-        }/*
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Bank>(entity =>
             {
-                entity.ToTable("Banks");
+                entity.ToTable("Bank");
                 entity.Property(m => m.Id);
                 entity.Property(m => m.Name);
                 entity.Property(m => m.Description);
             });
-
             modelBuilder.Entity<Account>(entity =>
             {
-                entity.ToTable("Accounts");
+                entity.ToTable("Account");
                 entity.Property(m => m.Id);
                 entity.Property(m => m.Name);
                 entity.Property(m => m.Password);
@@ -40,27 +39,25 @@ namespace Technovert.BankApp.Services
                 entity.Property(m => m.BankId);
                 entity.Property(m => m.Age);
                 entity.Property(m => m.Gender);
+                entity.Property(m => m.AccountStatus);
             });
-
             modelBuilder.Entity<Currency>(entity =>
             {
-                entity.ToTable("Currencies");
+                entity.ToTable("Currency");
                 entity.Property(m => m.Code);
                 entity.Property(m => m.Name);
                 entity.Property(m => m.InverseRate);
             });
-
             modelBuilder.Entity<StaffAccount>(entity =>
             {
-                entity.ToTable("StaffAccounts");
+                entity.ToTable("StaffAccount");
                 entity.Property(m => m.Id);
                 entity.Property(m => m.Name);
                 entity.Property(m => m.Password);
             });
-
             modelBuilder.Entity<Transaction>(entity =>
             {
-                entity.ToTable("Transactions");
+                entity.ToTable("Transaction");
                 entity.Property(m => m.Id);
                 entity.Property(m => m.BankId);
                 entity.Property(m => m.AccountId);
@@ -71,7 +68,8 @@ namespace Technovert.BankApp.Services
                 entity.Property(m => m.DestinationBankId);
                 entity.Property(m => m.DestinationAccountId);
                 entity.Property(m => m.OnTime);
-            *//*});*//*
-        }*/
+                entity.Property(m => m.TxnStatus);
+            });
+        }
     }
 }

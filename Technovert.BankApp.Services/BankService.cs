@@ -2,7 +2,6 @@
 using System.Text;
 using System.Collections.Generic;
 using Technovert.BankApp.Models;
-using Technovert.BankApp.Models.Exceptions;
 using Technovert.BankApp.Models.Enums;
 using System.Linq;
 using System.Net;
@@ -18,7 +17,6 @@ namespace Technovert.BankApp.Services
     {
         private HashingService hashing = new HashingService();
         DateTime today = DateTime.Today;
-        private SqlCommands commands=new SqlCommands();
         private BankDbContext DbContext ;
         
         public BankService(BankDbContext dbContext)
@@ -33,29 +31,6 @@ namespace Technovert.BankApp.Services
             {
                 throw new Exception("Invalid Bank Id");
             }
-            /*bool flag = false;
-            try
-            {
-                string temp= "SELECT * FROM BANKDATA WHERE BANKID = '" + bankId + "'";
-                using (SqlConnection newConnection = new SqlConnection(conn.ConnectionString))
-                {
-                    SqlCommand sql = new SqlCommand(temp, newConnection);
-                    newConnection.Open();
-                    SqlDataReader reader=sql.ExecuteReader();
-                    if (reader.HasRows==false)
-                    {
-                        flag = true;
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            if (flag)
-            {
-                throw new Exception("Invalid Bank Id");
-            }*/
         }
         public string BankIdGenerator(string bankName)
         {
@@ -66,7 +41,7 @@ namespace Technovert.BankApp.Services
         {
             if (String.IsNullOrWhiteSpace(bankName))
             {
-                throw new InvalidInputException();
+                throw new Exception("Invalid Input");
             }
             string newBankId = BankIdGenerator(bankName);
             var newBank = new Bank()
@@ -84,20 +59,6 @@ namespace Technovert.BankApp.Services
             {
                 throw new Exception(ex.Message);
             }
-            /*string temp = "INSERT INTO BANKDATA VALUES ('" + newBankId + "','" + bankName + "')";
-            try
-            {
-                using(SqlConnection newConnection = new SqlConnection(conn.ConnectionString))
-                {
-                    SqlCommand sql = new SqlCommand(temp, newConnection);
-                    newConnection.Open();
-                    sql.ExecuteNonQuery();
-                }
-            }
-            catch
-            {
-                throw new Exception("Invalid bank Name for creation");
-            }*/
         }
 
     }

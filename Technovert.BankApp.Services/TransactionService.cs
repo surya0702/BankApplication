@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Technovert.BankApp.Models;
-using Technovert.BankApp.Models.Exceptions;
 using Technovert.BankApp.Models.Enums;
 using System.Data.SqlClient;
 using System.Data;
@@ -15,10 +14,8 @@ namespace Technovert.BankApp.Services
     {
         private AccountHolderService accountHolder;
         private CurrencyConverter currencyConverter;
-        private SqlCommands commands = new SqlCommands();
         private BankDbContext DbContext ;
 
-        //public int limit = 50000;
         DateTime today = DateTime.Today;
         
         public TransactionService(BankDbContext dbContext,AccountHolderService accountHolder,CurrencyConverter currencyConverter)
@@ -46,6 +43,8 @@ namespace Technovert.BankApp.Services
                 var UserInfo = DbContext.Accounts.SingleOrDefault(m => m.Id == accountHolderId && m.BankId == bankId);
                 if (UserInfo == null)
                     throw new Exception("Invalid User Details");
+                if (UserInfo.AccountStatus == "Closed")
+                    throw new Exception("User Account Has been Closed!");
 
                 var CurrencyInfo = DbContext.Currencies.SingleOrDefault(m => m.Code == code);
                 if (CurrencyInfo == null)
@@ -83,6 +82,8 @@ namespace Technovert.BankApp.Services
 
                 if (UserInfo == null)
                     throw new Exception("Invalid User Details");
+                if (UserInfo.AccountStatus == "Closed")
+                    throw new Exception("User Account has been Closed!");
 
                 if (UserInfo.Balance < amount)
                     throw new Exception("Invalid Funds");
@@ -155,6 +156,8 @@ namespace Technovert.BankApp.Services
                 var userInfo = DbContext.Accounts.SingleOrDefault(m => m.Id == userAccountId && m.BankId == userBankId);
                 if (userInfo == null)
                     throw new Exception("Invalid User Details");
+                if (userInfo.AccountStatus == "Closed")
+                    throw new Exception("User Account Has been Closed!");
 
                 if (userInfo.Balance < amount + tax)
                     throw new Exception("Invalid Funds in Your Account!");
@@ -162,6 +165,8 @@ namespace Technovert.BankApp.Services
                 var beneInfo = DbContext.Accounts.SingleOrDefault(m => m.Id == beneficiaryAccountId && m.BankId == beneficiaryBankId);
                 if (beneInfo == null)
                     throw new Exception("Invalid Beneficiary Account Details");
+                if (beneInfo.AccountStatus == "Closed")
+                    throw new Exception("Beneficiary Account has been Closed!");
 
                 userInfo.Balance -= amount + tax;
                 beneInfo.Balance += amount;
@@ -217,6 +222,8 @@ namespace Technovert.BankApp.Services
                 
                 foreach(var row in info)
                 {
+                    if (row.TxnStatus == "Reversed")
+                        continue;
                     transactions.Add(row);
                 }
                 return transactions;

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Technovert.BankApp.Services;
 using Technovert.BankApp.Models;
-using Technovert.BankApp.Models.Exceptions;
 using Technovert.BankApp.Models.Enums;
 
 namespace Technovert.BankApp.CLI
@@ -125,7 +124,7 @@ namespace Technovert.BankApp.CLI
                                             }
                                             catch (Exception ex)
                                             {
-                                                Console.WriteLine(ex);
+                                                Console.WriteLine(ex.Message);
                                             }
                                             break;
                                         }
@@ -197,7 +196,7 @@ namespace Technovert.BankApp.CLI
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine(ex);
+                                Console.WriteLine(ex.Message);
                             }
                             break;
                         }

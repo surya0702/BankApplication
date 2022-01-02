@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Technovert.BankApp.Services;
-using Technovert.BankApp.Models.Exceptions;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
@@ -15,8 +14,9 @@ namespace Technovert.BankApp.CLI
     {
         static void Main()
         {
-            CurrencyConverter currencyConverter = new CurrencyConverter();
             BankDbContext DbContext = new BankDbContext();
+            CurrencyConverter currencyConverter = new CurrencyConverter(DbContext);
+            
             BankService bankService = new BankService(DbContext);
             StaffService bankStaffService = new StaffService(DbContext);
             AccountHolderService accountHolderService = new AccountHolderService(DbContext,bankService);
@@ -26,6 +26,7 @@ namespace Technovert.BankApp.CLI
             try
             {
                 bankStaffService.CreateStaffAccount("Admin"); // Default Staff Account , Id : Admin, Password : Admin@123
+                currencyConverter.CurrencyExchange();
                 bankService.CreateBank("SBI", "State Bank Of India"); // Default banks
                 bankService.CreateBank("YesBank", "Yes Bank of India");
                 bankService.CreateBank("HDFC", "Housing Development Finance Corporation Limited");

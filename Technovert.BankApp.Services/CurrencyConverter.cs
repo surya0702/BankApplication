@@ -17,11 +17,10 @@ namespace Technovert.BankApp.Services
     // Services available currencies
     public class CurrencyConverter
     {
-        private SqlCommands commands = new SqlCommands();
-        private BankDbContext DbContext = new BankDbContext();
-        public CurrencyConverter()
+        private BankDbContext DbContext;
+        public CurrencyConverter(BankDbContext DbContext)
         {
-            CurrencyExchange();  // Adds the default accepted currencies into the Application
+            this.DbContext = DbContext;
         }
 
         public decimal Converter(decimal amount,decimal exchangeRate) // Converts the amount into INR using exchange rate

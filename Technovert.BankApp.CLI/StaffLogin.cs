@@ -17,7 +17,7 @@ namespace Technovert.BankApp.CLI
             password = Console.ReadLine();
             try
             {
-                //bankStaffService.Login(bankService, accountHolderService, transactionService, id, password);
+                bankStaffService.Login(bankService, accountHolderService, transactionService, id, password);
                 string[] options = { "Create new Account", "Update Account Details", "Delete Account","View Transaction History",
                     "Revert Transaction", "Add new Currency","LogOut" };
                 LoginOptions loginOptions = new LoginOptions();
@@ -27,7 +27,7 @@ namespace Technovert.BankApp.CLI
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.Message);
             }
         }
     }

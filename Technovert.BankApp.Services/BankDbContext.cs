@@ -14,12 +14,17 @@ namespace Technovert.BankApp.Services
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<StaffAccount> Staff { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Transactions> Transactions { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public BankDbContext(DbContextOptions<BankDbContext> options) 
+            : base(options)
+        {
+
+        }
+        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=BankAppDB;Integrated Security=True");
-        }
+        }*/
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Bank>(entity =>
@@ -55,9 +60,9 @@ namespace Technovert.BankApp.Services
                 entity.Property(m => m.Name);
                 entity.Property(m => m.Password);
             });
-            modelBuilder.Entity<Transaction>(entity =>
+            modelBuilder.Entity<Transactions>(entity =>
             {
-                entity.ToTable("Transaction");
+                entity.ToTable("Transactions");
                 entity.Property(m => m.Id);
                 entity.Property(m => m.BankId);
                 entity.Property(m => m.AccountId);

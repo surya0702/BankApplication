@@ -9,51 +9,53 @@ using Newtonsoft.Json;
 using System.Security.Cryptography;
 using System.Data.SqlClient;
 using System.Data;
+using Technovert.BankApp.Services.Interfaces;
 
 namespace Technovert.BankApp.Services
 {
     // Services available for Banks
-    public class BankService
+    public class BankService : IBankService
     {
         private HashingService hashing = new HashingService();
         DateTime today = DateTime.Today;
-        private BankDbContext DbContext ;
+        private BankDbContext _DbContext ;
         
         public BankService(BankDbContext dbContext)
         {
-            this.DbContext = dbContext;
-        }
-
-        public void BankFinder(string bankId) // Finds the bank using bankId in data
-        {
-            var info = DbContext.Banks.SingleOrDefault(m => m.Id == bankId);
-            if(info == null)
-            {
-                throw new Exception("Invalid Bank Id");
-            }
+            _DbContext = dbContext;
         }
         public string BankIdGenerator(string bankName)
         {
             return bankName.Substring(0, 3).ToUpper() + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy");
         }
 
-        public void CreateBank(string bankName,string description) // Creates a new Bank and adds the bank to data
+        public Bank CreateBank(Bank bank) // Creates a new Bank and adds the bank to data
         {
-            if (String.IsNullOrWhiteSpace(bankName))
-            {
-                throw new Exception("Invalid Input");
-            }
-            string newBankId = BankIdGenerator(bankName);
-            var newBank = new Bank()
-            {
-                Id = newBankId,
-                Name = bankName,
-                Description = description
-            };
+            hashing.InputValidator(bank);
             try
             {
-                DbContext.Banks.Add(newBank);
-                DbContext.SaveChanges();
+                bank.Id = BankIdGenerator(bank.Name);
+                _DbContext.Banks.Add(bank);
+                _DbContext.SaveChanges();
+                return bank;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public Bank CloseBank(string bankId)
+        {
+            hashing.InputValidator(bankId);
+            try
+            {
+                var bankToDelete = _DbContext.Banks.SingleOrDefault(m => m.Id == bankId);
+                if (bankToDelete.BankStatus == Status.Closed)
+                    throw new Exception("Bank Already Closed!");
+                bankToDelete.BankStatus = Status.Closed;
+                return bankToDelete;
             }
             catch(Exception ex)
             {
@@ -61,5 +63,27 @@ namespace Technovert.BankApp.Services
             }
         }
 
+        public List<Bank> GetAllBanks()
+        {
+            return _DbContext.Banks.Where(m=>m.BankStatus==Status.Active).ToList();
+        }
+
+        public Bank GetBank(string bankId)
+        {
+            var bank = _DbContext.Banks.FirstOrDefault(m => m.Id == bankId);
+            if (bank == null)
+                throw new Exception("Bank Not Found!");
+            if (bank.BankStatus == Status.Closed)
+                throw new Exception("Bank was Closed!");
+            return bank;
+        }
+
+        public Bank UpdateBank(Bank bank)
+        {
+            _DbContext.Banks.Attach(bank);
+            _DbContext.SaveChanges();
+            var UpdatedBank = _DbContext.Banks.FirstOrDefault(m => m.Id == bank.Id);
+            return UpdatedBank;
+        }
     }
 }

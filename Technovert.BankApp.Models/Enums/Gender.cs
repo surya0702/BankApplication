@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Technovert.BankApp.Models.Enums
 {
-    public enum GenderType
+    public enum Gender
     {
-        Male,
+        Male=1,
         Female,
         Others
     }

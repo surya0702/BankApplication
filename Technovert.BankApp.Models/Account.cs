@@ -13,8 +13,8 @@ namespace Technovert.BankApp.Models
         public string Password { get; set; }
         public decimal Balance { get; set; }
         public int Age { get; set; }
-        public string Gender { get; set; }
+        public Gender Gender { get; set; }
         public string BankId { get; set; }
-        public string AccountStatus { get; set; }
+        public Status AccountStatus { get; set; }
     }
 }

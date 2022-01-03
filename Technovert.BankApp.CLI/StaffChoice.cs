@@ -39,7 +39,7 @@ namespace Technovert.BankApp.CLI
                             }
                             try
                             {
-                                string[] response = bankStaffService.CreateAccount(name, bankName,age,gender);
+                                string[] response = accountHolderService.CreateAccount(name, bankName,age,gender);
                                 string newId = response[0], password = response[1];
                                 printer.ResponsePrinter("Credentials for newly Created Account are");
                                 Console.WriteLine("\nAccount Id : " + newId);
@@ -168,7 +168,7 @@ namespace Technovert.BankApp.CLI
                             accountId = Console.ReadLine();
                             try
                             {
-                                List<Transaction> transactions = transactionService.TransactionHistory(bankId, accountId);
+                                List<Transactions> transactions = transactionService.TransactionHistory(bankId, accountId);
                                 printer.ResponsePrinter("Transaction Log");
                                 printer.TablePrinter(transactions);
                             }
@@ -187,7 +187,7 @@ namespace Technovert.BankApp.CLI
                             accountId = Console.ReadLine();
                             try
                             {
-                                List<Transaction> transactions = transactionService.TransactionHistory(bankId, accountId);
+                                List<Transactions> transactions = transactionService.TransactionHistory(bankId, accountId);
                                 printer.ResponsePrinter("Transaction Log");
                                 string transactionId = printer.TablePrinter(transactions, true);
 

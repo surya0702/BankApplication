@@ -13,16 +13,16 @@ namespace Technovert.BankApp.Services
     public class TransactionService
     {
         private AccountHolderService accountHolder;
-        private CurrencyConverter currencyConverter;
-        private BankDbContext DbContext ;
+        private CurrencyService currencyConverter;
+        private BankDbContext _DbContext ;
 
         DateTime today = DateTime.Today;
         
-        public TransactionService(BankDbContext dbContext,AccountHolderService accountHolder,CurrencyConverter currencyConverter)
+        public TransactionService(BankDbContext dbContext,AccountHolderService accountHolder,CurrencyService currencyConverter)
         {
             this.accountHolder = accountHolder;
             this.currencyConverter = currencyConverter;
-            this.DbContext = dbContext;
+            _DbContext = dbContext;
         }
 
         public string CurrentTime()
@@ -37,24 +37,23 @@ namespace Technovert.BankApp.Services
         
         public void Deposit(string bankId, string accountHolderId, decimal amount,string code) // Deposits the amount into account holder account
         {
-            this.accountHolder.InputValidator(bankId, accountHolderId);
             try
             {
-                var UserInfo = DbContext.Accounts.SingleOrDefault(m => m.Id == accountHolderId && m.BankId == bankId);
+                var UserInfo = _DbContext.Accounts.SingleOrDefault(m => m.Id == accountHolderId && m.BankId == bankId);
                 if (UserInfo == null)
                     throw new Exception("Invalid User Details");
-                if (UserInfo.AccountStatus == "Closed")
+                if (UserInfo.AccountStatus == Status.Closed)
                     throw new Exception("User Account Has been Closed!");
 
-                var CurrencyInfo = DbContext.Currencies.SingleOrDefault(m => m.Code == code);
+                var CurrencyInfo = _DbContext.Currencies.SingleOrDefault(m => m.Code == code);
                 if (CurrencyInfo == null)
                     throw new Exception("Invalid Currency Code");
 
                 Decimal newBalance= currencyConverter.Converter(amount, CurrencyInfo.InverseRate);
                 UserInfo.Balance += newBalance;
-                DbContext.Accounts.Update(UserInfo);
+                _DbContext.Accounts.Update(UserInfo);
 
-                var newTransaction = new Transaction()
+                var newTransaction = new Transactions()
                 {
                     Id = TransactionIdGenerator(bankId, accountHolderId),
                     BankId = bankId,
@@ -63,9 +62,9 @@ namespace Technovert.BankApp.Services
                     TransactionType = "Credit",
                     OnTime = DateTime.Now
                 };
-                DbContext.Transactions.Add(newTransaction);
+                _DbContext.Transactions.Add(newTransaction);
 
-                DbContext.SaveChanges();
+                _DbContext.SaveChanges();
             }
             catch(Exception ex)
             {
@@ -75,23 +74,22 @@ namespace Technovert.BankApp.Services
 
         public void Withdraw(string bankId, string accountHolderId, decimal amount) // Withdraws the amount from account holders account
         {
-            this.accountHolder.InputValidator(bankId, accountHolderId);
             try
             {
-                var UserInfo = DbContext.Accounts.SingleOrDefault(m => m.Id == accountHolderId && m.BankId == bankId);
+                var UserInfo = _DbContext.Accounts.SingleOrDefault(m => m.Id == accountHolderId && m.BankId == bankId);
 
                 if (UserInfo == null)
                     throw new Exception("Invalid User Details");
-                if (UserInfo.AccountStatus == "Closed")
+                if (UserInfo.AccountStatus == Status.Closed)
                     throw new Exception("User Account has been Closed!");
 
                 if (UserInfo.Balance < amount)
                     throw new Exception("Invalid Funds");
 
                 UserInfo.Balance -= amount;
-                DbContext.Accounts.Update(UserInfo);
+                _DbContext.Accounts.Update(UserInfo);
 
-                var newTransaction = new Transaction()
+                var newTransaction = new Transactions()
                 {
                     Id = TransactionIdGenerator(bankId, accountHolderId),
                     BankId = bankId,
@@ -100,9 +98,9 @@ namespace Technovert.BankApp.Services
                     TransactionType = "Debit",
                     OnTime = DateTime.Now
                 };
-                DbContext.Transactions.Add(newTransaction);
+                _DbContext.Transactions.Add(newTransaction);
 
-                DbContext.SaveChanges();
+                _DbContext.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -140,7 +138,6 @@ namespace Technovert.BankApp.Services
 
         public void Transfer(string userBankId, string userAccountId, decimal amount, string beneficiaryBankId, string beneficiaryAccountId, string taxType)
         { // Transfers the amount from one account to another account
-            this.accountHolder.InputValidator(userAccountId, beneficiaryAccountId, userBankId, beneficiaryBankId);
 
             if (userBankId == beneficiaryBankId && userAccountId == beneficiaryAccountId)
             {
@@ -153,19 +150,19 @@ namespace Technovert.BankApp.Services
                 decimal tax = TaxCalculator(userBankId, beneficiaryBankId, amount, taxType);
                 tax = Math.Round(tax, 2);
 
-                var userInfo = DbContext.Accounts.SingleOrDefault(m => m.Id == userAccountId && m.BankId == userBankId);
+                var userInfo = _DbContext.Accounts.SingleOrDefault(m => m.Id == userAccountId && m.BankId == userBankId);
                 if (userInfo == null)
                     throw new Exception("Invalid User Details");
-                if (userInfo.AccountStatus == "Closed")
+                if (userInfo.AccountStatus == Status.Closed)
                     throw new Exception("User Account Has been Closed!");
 
                 if (userInfo.Balance < amount + tax)
                     throw new Exception("Invalid Funds in Your Account!");
 
-                var beneInfo = DbContext.Accounts.SingleOrDefault(m => m.Id == beneficiaryAccountId && m.BankId == beneficiaryBankId);
+                var beneInfo = _DbContext.Accounts.SingleOrDefault(m => m.Id == beneficiaryAccountId && m.BankId == beneficiaryBankId);
                 if (beneInfo == null)
                     throw new Exception("Invalid Beneficiary Account Details");
-                if (beneInfo.AccountStatus == "Closed")
+                if (beneInfo.AccountStatus == Status.Closed)
                     throw new Exception("Beneficiary Account has been Closed!");
 
                 userInfo.Balance -= amount + tax;
@@ -173,7 +170,7 @@ namespace Technovert.BankApp.Services
 
                 string userTxnId = TransactionIdGenerator(userBankId, userAccountId);
                 string beneTxnId = TransactionIdGenerator(beneficiaryBankId, beneficiaryAccountId);
-                var userTXN = new Transaction()
+                var userTXN = new Transactions()
                 {
                     Id = userTxnId,
                     BankId = userBankId,
@@ -186,9 +183,9 @@ namespace Technovert.BankApp.Services
                     DestinationAccountId = beneficiaryAccountId,
                     OnTime = DateTime.Now
                 };
-                DbContext.Transactions.Add(userTXN);
+                _DbContext.Transactions.Add(userTXN);
 
-                var beneTXN = new Transaction()
+                var beneTXN = new Transactions()
                 {
                     Id = beneTxnId,
                     BankId = beneficiaryBankId,
@@ -201,9 +198,9 @@ namespace Technovert.BankApp.Services
                     DestinationAccountId = userAccountId,
                     OnTime = DateTime.Now
                 };
-                DbContext.Transactions.Add(beneTXN);
+                _DbContext.Transactions.Add(beneTXN);
 
-                DbContext.SaveChanges();
+                _DbContext.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -211,14 +208,13 @@ namespace Technovert.BankApp.Services
             }
         }
 
-        public List<Transaction> TransactionHistory(string bankId,string accountId)
+        public List<Transactions> TransactionHistory(string bankId,string accountId)
         { // returns the transactions done by the account holder
-            this.accountHolder.InputValidator(bankId, accountId);
             try
             {
-                var info = DbContext.Transactions.Where(m => m.BankId == bankId && m.AccountId == accountId).ToList();
+                var info = _DbContext.Transactions.Where(m => m.BankId == bankId && m.AccountId == accountId).ToList();
 
-                List<Transaction> transactions = new List<Transaction>();
+                List<Transactions> transactions = new List<Transactions>();
                 
                 foreach(var row in info)
                 {
@@ -236,10 +232,9 @@ namespace Technovert.BankApp.Services
 
         public decimal ViewBalance(string bankId, string accountId)
         { // returns the balance available in account
-            this.accountHolder.InputValidator(bankId, accountId);
             try
             {
-                var info = DbContext.Accounts.SingleOrDefault(m => m.Id == accountId && m.BankId == bankId);
+                var info = _DbContext.Accounts.SingleOrDefault(m => m.Id == accountId && m.BankId == bankId);
                 return info.Balance;
             }
             catch(Exception ex)

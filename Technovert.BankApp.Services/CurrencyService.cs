@@ -11,16 +11,18 @@ using System.Net;
 using Newtonsoft.Json;
 using Technovert.BankApp.Models;
 using System.Data.SqlClient;
+using Technovert.BankApp.Services.Interfaces;
 
 namespace Technovert.BankApp.Services
 {
     // Services available currencies
-    public class CurrencyConverter
+    public class CurrencyService : ICurrencyService
     {
-        private BankDbContext DbContext;
-        public CurrencyConverter(BankDbContext DbContext)
+        private BankDbContext _DbContext;
+        public CurrencyService(BankDbContext DbContext)
         {
-            this.DbContext = DbContext;
+            _DbContext = DbContext;
+            CurrencyExchange();
         }
 
         public decimal Converter(decimal amount,decimal exchangeRate) // Converts the amount into INR using exchange rate
@@ -50,11 +52,11 @@ namespace Technovert.BankApp.Services
                         Name = currency.Value.Name,
                         InverseRate = currency.Value.InverseRate
                     };
-                    DbContext.Currencies.Add(newCurrency);
+                    _DbContext.Currencies.Add(newCurrency);
 
                     currencyCounter += 1;
                 }
-                DbContext.SaveChanges();
+                _DbContext.SaveChanges();
             }
             catch(Exception ex)
             {

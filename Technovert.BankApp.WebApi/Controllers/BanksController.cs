@@ -37,7 +37,7 @@ namespace Technovert.BankApp.WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(PostBankDTO bank)
+        public IActionResult Post(BankDTO bank)
         {
             if (bank == null)
                 return BadRequest();
@@ -45,6 +45,41 @@ namespace Technovert.BankApp.WebApi.Controllers
             newBank.Description = bank.Desciption;
             newBank.BankStatus = Models.Enums.Status.Active;
             return Ok(bankService.CreateBank(newBank));
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id)
+        {
+            try
+            {
+                var bank = bankService.CloseBank(id);
+                var bankToDelete = mapper.Map<BankDTO>(bank);
+                bankToDelete.Desciption = bank.Description;
+                return Ok(bankToDelete);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(string id,BankDTO bankDTO)
+        {
+            try
+            {
+                if (bankDTO == null)
+                    return BadRequest("No values are specified");
+                var bank = bankService.GetBank(id);
+                bank.Name = bankDTO.Name;
+                bank.Description = bankDTO.Desciption;
+                var updatedBank = bankService.UpdateBank(bank);
+                return Ok(mapper.Map<BankDTO>(updatedBank));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

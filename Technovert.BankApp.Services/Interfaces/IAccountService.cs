@@ -7,7 +7,7 @@ using Technovert.BankApp.Models;
 
 namespace Technovert.BankApp.Services.Interfaces
 {
-    public interface IAccountHolderService
+    public interface IAccountService
     {
         public string Authenticate(string bankId,string id,string password);
         public Account CreateAccount(Account account);

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 using Technovert.BankApp.Models.Enums;
 
-namespace Technovert.BankApp.Models
+namespace Technovert.BankApp.WebApi.DTOs.TransactionDTOs
 {
-    // Properties available for Transactions done by users
-    public class Transactions
+    public class GetTransactionDTO
     {
-        [Key]
         public string Id { get; set; }
         public string BankId { get; set; }
         public string AccountId { get; set; }
@@ -17,7 +13,7 @@ namespace Technovert.BankApp.Models
         public string DestinationAccountId { get; set; }
         public decimal Amount { get; set; }
         public decimal TaxAmount { get; set; }
-        public TaxType TaxType { get; set; }
+        public string TaxType { get; set; }
         public DateTime OnTime { get; set; }
         public TransactionType TransactionType { get; set; }
     }

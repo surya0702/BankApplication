@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Technovert.BankApp.Models.Enums
 {
-    // Transaction types
-    public enum TransactionType
+    public enum AccountType
     {
-        Debit=1,
-        Credit,
-        Transfer
+        Staff=1,
+        Customer
     }
 }

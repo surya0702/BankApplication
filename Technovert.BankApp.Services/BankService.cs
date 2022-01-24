@@ -31,10 +31,12 @@ namespace Technovert.BankApp.Services
 
         public Bank CreateBank(Bank bank) // Creates a new Bank and adds the bank to data
         {
-            hashing.InputValidator(bank);
             try
             {
                 bank.Id = BankIdGenerator(bank.Name);
+                var duplicateBank = _DbContext.Banks.FirstOrDefault(m => m.Name == bank.Name && m.Description == bank.Description);
+                if (duplicateBank != null)
+                    throw new Exception("Bank already exists!");
                 _DbContext.Banks.Add(bank);
                 _DbContext.SaveChanges();
                 return bank;
@@ -43,18 +45,19 @@ namespace Technovert.BankApp.Services
             {
                 throw new Exception(ex.Message);
             }
-
         }
 
         public Bank CloseBank(string bankId)
         {
-            hashing.InputValidator(bankId);
             try
             {
                 var bankToDelete = _DbContext.Banks.SingleOrDefault(m => m.Id == bankId);
+                if (bankToDelete == null)
+                    throw new Exception("Invalid Bank Id");
                 if (bankToDelete.BankStatus == Status.Closed)
                     throw new Exception("Bank Already Closed!");
                 bankToDelete.BankStatus = Status.Closed;
+                _DbContext.SaveChanges();
                 return bankToDelete;
             }
             catch(Exception ex)

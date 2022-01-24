@@ -18,7 +18,7 @@ namespace Technovert.BankApp.Services
 
 
         private BankService bankService;
-        private AccountHolderService accountHolderService;
+        private AccountService accountHolderService;
         private TransactionService transactionService;
         private HashingService hashing = new HashingService();
         private BankDbContext _DbContext ;
@@ -67,7 +67,7 @@ namespace Technovert.BankApp.Services
 
         
 
-        public void Login(BankService bankService, AccountHolderService accountHolderService, TransactionService transactionService, string id,string password)
+        public void Login(BankService bankService, AccountService accountHolderService, TransactionService transactionService, string id,string password)
         { // Logs the staff into their accounts
 
             hashing.InputValidator(id, password);
@@ -184,7 +184,7 @@ namespace Technovert.BankApp.Services
 
                 var beneTxn = _DbContext.Transactions.SingleOrDefault(m => m.Id == beneTxnId && m.BankId == userTxn.DestinationBankId && m.AccountId == userTxn.DestinationAccountId);
 
-
+/*
                 if (userTxn.TransactionType == "Debit")
                 {
                     userInfo.Balance += userTxn.Amount;
@@ -197,7 +197,7 @@ namespace Technovert.BankApp.Services
                 }
 
                 userTxn.TxnStatus = "Reversed";
-                beneTxn.TxnStatus = "Reversed";
+                beneTxn.TxnStatus = "Reversed";*/
                 _DbContext.SaveChanges();
             }
             catch (Exception ex)

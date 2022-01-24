@@ -9,11 +9,11 @@ using Technovert.BankApp.Services.Interfaces;
 namespace Technovert.BankApp.Services
 {
     // All the services available for account holders
-    public class AccountHolderService : IAccountHolderService
+    public class AccountService : IAccountService
     {
         private HashingService hashing = new HashingService();
         private BankDbContext _DbContext;
-        public AccountHolderService(BankDbContext dbContext)
+        public AccountService(BankDbContext dbContext)
         {
             _DbContext = dbContext;
         }

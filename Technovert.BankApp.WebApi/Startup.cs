@@ -43,8 +43,9 @@ namespace Technovert.BankApp.WebApi
             services.AddDbContext<BankDbContext>(p => p.UseSqlServer("Data Source=.;Initial Catalog=BankAppDB;Integrated Security=True"));
 
             services.AddScoped<IBankService, BankService>();
-            services.AddScoped<IAccountHolderService, AccountHolderService>();
+            services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ICurrencyService, CurrencyService>();
+            services.AddScoped<ITransactionService, TransactionService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

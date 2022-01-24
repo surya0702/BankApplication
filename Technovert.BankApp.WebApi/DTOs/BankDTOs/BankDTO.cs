@@ -5,7 +5,7 @@ using Technovert.BankApp.Models.Enums;
 namespace Technovert.BankApp.WebApi.DTOs.BankDTOs
 {
     // Class to represent the properties available for Account holders
-    public class PostBankDTO
+    public class BankDTO
     {
         [Required]
         public string Name { get; set; }

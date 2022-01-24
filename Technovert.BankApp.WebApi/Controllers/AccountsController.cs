@@ -18,8 +18,8 @@ namespace Technovert.BankApp.WebApi.Controllers
     {
         private HashingService hashing = new HashingService();
         private IMapper mapper;
-        private IAccountHolderService accountService;
-        public AccountsController(IAccountHolderService AccountService,IMapper Mapper)
+        private IAccountService accountService;
+        public AccountsController(IAccountService AccountService,IMapper Mapper)
         {
             this.mapper = Mapper;
             this.accountService = AccountService;
@@ -77,6 +77,26 @@ namespace Technovert.BankApp.WebApi.Controllers
             
         }
 
+        [HttpPut("{bankId}/{id}")]
+        public IActionResult Put(string bankId,string id,PutAccountDTO accountDTO)
+        {
+            try
+            {
+                if (accountDTO == null)
+                    return BadRequest();
+                var account = accountService.GetAccount(bankId, id);
+                account.Name = accountDTO.Name;
+                account.Age = accountDTO.Age;
+                account.Gender = accountDTO.Gender;
+                var updatedAccount=accountService.UpdateAccount(account);
+                return Ok(mapper.Map<GetAccountDTO>(updatedAccount));
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         [HttpDelete("{bankId}/{id}")]
         public IActionResult Delete(string bankId, string id)
         {
@@ -125,7 +145,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
-        [HttpPost("auth/{bankId}")]
+       /* [HttpPost("auth/{bankId}")]
         public IActionResult Authenticate(string bankId,AuthenticateDTO authDTO)
         {
             try
@@ -137,6 +157,6 @@ namespace Technovert.BankApp.WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
     }
 }

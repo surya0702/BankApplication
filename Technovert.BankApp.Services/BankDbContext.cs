@@ -68,12 +68,11 @@ namespace Technovert.BankApp.Services
                 entity.Property(m => m.AccountId);
                 entity.Property(m => m.Amount);
                 entity.Property(m => m.TaxAmount);
-                entity.Property(m => m.TransactionType);
                 entity.Property(m => m.TaxType);
                 entity.Property(m => m.DestinationBankId);
                 entity.Property(m => m.DestinationAccountId);
                 entity.Property(m => m.OnTime);
-                entity.Property(m => m.TxnStatus);
+                entity.Property(m => m.TransactionType);
             });
         }
     }

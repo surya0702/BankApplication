@@ -5,6 +5,11 @@ using Technovert.BankApp.Models;
 using Technovert.BankApp.Models.Enums;
 using System.Data.SqlClient;
 using Technovert.BankApp.Services.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Options;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace Technovert.BankApp.Services
 {
@@ -13,9 +18,12 @@ namespace Technovert.BankApp.Services
     {
         private HashingService hashing = new HashingService();
         private BankDbContext _DbContext;
-        public AccountService(BankDbContext dbContext)
+        private readonly AppSettings _appSettings;
+
+        public AccountService(BankDbContext dbContext,IOptions<AppSettings> appSettings)
         {
             _DbContext = dbContext;
+            _appSettings = appSettings.Value;
         }
         
         public string Authenticate(string bankId,string id,string password) // Logs the user into his account by checking with the available id and password
@@ -25,13 +33,26 @@ namespace Technovert.BankApp.Services
             {
                 var info = _DbContext.Accounts.SingleOrDefault(m => m.Id == id && m.BankId == bankId);
                 if (info == null)
-                    throw new Exception("Invalid Details");
-                if (info.AccountStatus == Status.Closed)
-                    throw new Exception("Account Has Been Closed! Please Contact Bank Staff.");
+                    return null;
                 string currPassword = hashing.GetHash(password);
                 if (info.Password != currPassword)
-                    throw new Exception("Invalid Password!");
-                return "Authentication Successful";
+                    throw new Exception("Invalid Password");
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim(ClaimTypes.Name, info.Id),
+                        new Claim(ClaimTypes.Role, info.Role)
+                    }),
+                    Expires = DateTime.Now.AddHours(1),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+
+                return tokenHandler.WriteToken(token);
             }
             catch(Exception ex)
             {
@@ -67,6 +88,8 @@ namespace Technovert.BankApp.Services
             var accountToDelete = _DbContext.Accounts.SingleOrDefault(m => m.BankId == bankId && m.Id == accountId);
             if (accountToDelete.AccountStatus == Status.Closed)
                 throw new Exception("Account was Already Closed");
+            if (accountToDelete.Role == Roles.Admin)
+                throw new Exception("Can't Delete a Administrator Account");
             accountToDelete.AccountStatus = Status.Closed;
             _DbContext.SaveChanges();
             return accountToDelete;
@@ -84,7 +107,7 @@ namespace Technovert.BankApp.Services
 
         public List<Account> GetAllAccounts(string bankId)
         {
-            return _DbContext.Accounts.Where(m => m.BankId == bankId && m.AccountStatus==Status.Active).ToList();
+            return _DbContext.Accounts.Where(m => m.BankId == bankId && m.AccountStatus==Status.Active && m.Role==Roles.User).ToList();
         }
     }
 }

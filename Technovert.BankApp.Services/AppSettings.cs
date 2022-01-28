@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Technovert.BankApp.Models.Enums
+namespace Technovert.BankApp.Services
 {
-    public enum AccountType
+    public class AppSettings
     {
-        Admin=1,
-        User
+        public string Secret { get; set; }
     }
 }

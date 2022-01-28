@@ -22,7 +22,7 @@ namespace Technovert.BankApp.Services
         public CurrencyService(BankDbContext DbContext)
         {
             _DbContext = DbContext;
-            CurrencyExchange();
+            //CurrencyExchange();
         }
 
         public decimal Converter(decimal amount,decimal exchangeRate) // Converts the amount into INR using exchange rate

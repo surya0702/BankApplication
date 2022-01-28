@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -6,13 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Technovert.BankApp.Models;
+using Technovert.BankApp.Models.Enums;
 using Technovert.BankApp.Services;
 using Technovert.BankApp.Services.Interfaces;
 using Technovert.BankApp.WebApi.DTOs.BankDTOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Technovert.BankApp.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class BanksController : ControllerBase
     {
@@ -24,18 +28,21 @@ namespace Technovert.BankApp.WebApi.Controllers
             this.bankService = bankService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Get()
         {
             return Ok(bankService.GetAllBanks());
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public IActionResult Get(string id)
         {
             return Ok(bankService.GetBank(id));
         }
 
+        [Authorize(Roles =Roles.Admin)]
         [HttpPost]
         public IActionResult Post(BankDTO bank)
         {
@@ -47,6 +54,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             return Ok(bankService.CreateBank(newBank));
         }
 
+        [Authorize(Roles=Roles.Admin)]
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
@@ -56,25 +64,6 @@ namespace Technovert.BankApp.WebApi.Controllers
                 var bankToDelete = mapper.Map<BankDTO>(bank);
                 bankToDelete.Desciption = bank.Description;
                 return Ok(bankToDelete);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Put(string id,BankDTO bankDTO)
-        {
-            try
-            {
-                if (bankDTO == null)
-                    return BadRequest("No values are specified");
-                var bank = bankService.GetBank(id);
-                bank.Name = bankDTO.Name;
-                bank.Description = bankDTO.Desciption;
-                var updatedBank = bankService.UpdateBank(bank);
-                return Ok(mapper.Map<BankDTO>(updatedBank));
             }
             catch(Exception ex)
             {

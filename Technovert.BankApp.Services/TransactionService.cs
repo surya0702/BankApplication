@@ -53,18 +53,17 @@ namespace Technovert.BankApp.Services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Transactions> GetAllTransactions(string bankId, string accountId)
+        public List<Transactions> GetAllTransactions(string bankId, string accountId)
         {
             try
             {
-                var info = _DbContext.Transactions.Where(m => (m.BankId == bankId && m.AccountId == accountId)
-                 || (m.DestinationBankId == bankId && m.DestinationAccountId == accountId)).ToList();
+                var info = _DbContext.Transactions.Where(m => (m.BankId == bankId && m.AccountId == accountId) || (m.DestinationBankId == bankId && m.DestinationAccountId == accountId)).ToList();
 
                 return info;
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception(ex.Message);
+                throw new Exception("No Available Transactions");
             }
         }
 

@@ -10,10 +10,13 @@ using Technovert.BankApp.WebApi.DTOs.TransactionDTOs;
 using AutoMapper;
 using Technovert.BankApp.Services.Interfaces;
 using Technovert.BankApp.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Technovert.BankApp.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class TransactionsController : ControllerBase
     {

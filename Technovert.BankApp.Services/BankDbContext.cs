@@ -45,6 +45,7 @@ namespace Technovert.BankApp.Services
                 entity.Property(m => m.Age);
                 entity.Property(m => m.Gender);
                 entity.Property(m => m.AccountStatus);
+                entity.Property(m => m.Role);
             });
             modelBuilder.Entity<Currency>(entity =>
             {

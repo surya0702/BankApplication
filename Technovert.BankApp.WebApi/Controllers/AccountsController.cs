@@ -9,9 +9,13 @@ using Technovert.BankApp.Services;
 using Technovert.BankApp.WebApi.DTOs.AccountDTOs;
 using AutoMapper;
 using Technovert.BankApp.Services.Interfaces;
+using Technovert.BankApp.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Technovert.BankApp.WebApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AccountsController : ControllerBase
@@ -25,6 +29,24 @@ namespace Technovert.BankApp.WebApi.Controllers
             this.accountService = AccountService;
         }
 
+        [AllowAnonymous]
+        [HttpPost("authenticate/{bankId}")]
+        public IActionResult Authenticate(string bankId, AuthenticateDTO authDTO)
+        {
+            try
+            {
+                var token = accountService.Authenticate(bankId, authDTO.Id, authDTO.Password);
+                if (token == null)
+                    return Unauthorized();
+                return Ok(token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize(Roles =Roles.Admin)]
         [HttpGet("{bankId}")]
         public IActionResult Get(string bankId)
         {
@@ -40,6 +62,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("{bankId}/{id}")]
         public IActionResult Get(string bankId,string id)
         {
@@ -55,6 +78,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
+        [Authorize(Roles =Roles.Admin)]
         [HttpPost("{bankId}")]
         public IActionResult Post(string bankId,PostAccountDTO newAccountDTO)
         {
@@ -65,6 +89,7 @@ namespace Technovert.BankApp.WebApi.Controllers
                 var acc = mapper.Map<Account>(newAccountDTO);
                 acc.Password = hashing.GetHash(newAccountDTO.Password);
                 acc.AccountStatus = Models.Enums.Status.Active;
+                acc.Role = Roles.User;
                 acc.Id = Guid.NewGuid().ToString();
                 acc.BankId = bankId;
                 var newAcc=accountService.CreateAccount(acc);
@@ -77,6 +102,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             
         }
 
+        [AllowAnonymous]
         [HttpPut("{bankId}/{id}")]
         public IActionResult Put(string bankId,string id,PutAccountDTO accountDTO)
         {
@@ -85,6 +111,8 @@ namespace Technovert.BankApp.WebApi.Controllers
                 if (accountDTO == null)
                     return BadRequest();
                 var account = accountService.GetAccount(bankId, id);
+                if (account.Role == Roles.Admin)
+                    return BadRequest("Can't Update Administrator");
                 account.Name = accountDTO.Name;
                 account.Age = accountDTO.Age;
                 account.Gender = accountDTO.Gender;
@@ -97,6 +125,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
+        [Authorize(Roles =Roles.Admin)]
         [HttpDelete("{bankId}/{id}")]
         public IActionResult Delete(string bankId, string id)
         {
@@ -111,6 +140,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("balance/{bankId}/{id}")]
         public IActionResult GetBalance(string bankId,string id)
         {
@@ -127,6 +157,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPut("balance/{bankId}/{id}")]
         public IActionResult PutBalance(string bankId,string id,BalanceDTO balanceDTO)
         {
@@ -144,19 +175,5 @@ namespace Technovert.BankApp.WebApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-       /* [HttpPost("auth/{bankId}")]
-        public IActionResult Authenticate(string bankId,AuthenticateDTO authDTO)
-        {
-            try
-            {
-                var acc = accountService.Authenticate(bankId, authDTO.Id, authDTO.Password);
-                return Ok(acc);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }*/
     }
 }

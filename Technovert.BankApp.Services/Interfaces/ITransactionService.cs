@@ -13,7 +13,7 @@ namespace Technovert.BankApp.Services.Interfaces
         public Transactions AddTransaction(Transactions transaction);
         public Transactions UpdateTransaction(Transactions transaction);
         public Transactions DeleteTransaction(Transactions transaction);
-        public IEnumerable<Transactions> GetAllTransactions(string bankId, string accountId);
+        public List<Transactions> GetAllTransactions(string bankId, string accountId);
         public Transactions Deposit(string bankId, string accountId, decimal amount);
         public Transactions Withdraw(string bankId, string accountId, decimal amount);
     }

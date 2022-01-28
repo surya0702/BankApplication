@@ -33,7 +33,7 @@ namespace Technovert.BankApp.Services
         {
             try
             {
-                bank.Id = BankIdGenerator(bank.Name);
+                bank.Id = Guid.NewGuid().ToString();
                 var duplicateBank = _DbContext.Banks.FirstOrDefault(m => m.Name == bank.Name && m.Description == bank.Description);
                 if (duplicateBank != null)
                     throw new Exception("Bank already exists!");

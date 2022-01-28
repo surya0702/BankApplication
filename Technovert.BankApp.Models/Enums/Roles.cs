@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Technovert.BankApp.Models.Enums
 {
-    public enum AccountType
+    public class Roles
     {
-        Admin=1,
-        User
+        public const string Admin = "Admin";
+        public const string User = "User";
     }
 }

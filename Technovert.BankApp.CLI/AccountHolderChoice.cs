@@ -41,7 +41,7 @@ namespace Technovert.BankApp.CLI
                         {
                             try
                             {
-                                List<Transaction> transactions = transactionService.TransactionHistory(bankId, accountId);
+                                List<Transactions> transactions = transactionService.TransactionHistory(bankId, accountId);
                                 printer.ResponsePrinter("Transaction Log");
                                 printer.TablePrinter(transactions);
                             }

@@ -7,7 +7,8 @@ namespace Technovert.BankApp.Models.Enums
     // Transaction types
     public enum TransactionType
     {
-        Debit,
-        Credit
+        Debit=1,
+        Credit,
+        Transfer
     }
 }

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Technovert.BankApp.CLI", "Technovert.BankApp.CLI\Technovert.BankApp.CLI.csproj", "{7DA037BE-C0EF-4B31-80FA-B7AE28425219}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Technovert.BankApp.Models", "Technovert.BankApp.Models\Technovert.BankApp.Models.csproj", "{C53858F5-632A-4ECA-9D1A-A2989AE8A759}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Technovert.BankApp.Services", "Technovert.BankApp.Services\Technovert.BankApp.Services.csproj", "{552D8941-E948-4E85-B2FE-69B96412440B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Technovert.BankApp.WebApi", "Technovert.BankApp.WebApi\Technovert.BankApp.WebApi.csproj", "{10EEF85B-58EE-4E33-8944-479B4113F377}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7DA037BE-C0EF-4B31-80FA-B7AE28425219}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DA037BE-C0EF-4B31-80FA-B7AE28425219}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DA037BE-C0EF-4B31-80FA-B7AE28425219}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DA037BE-C0EF-4B31-80FA-B7AE28425219}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C53858F5-632A-4ECA-9D1A-A2989AE8A759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C53858F5-632A-4ECA-9D1A-A2989AE8A759}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C53858F5-632A-4ECA-9D1A-A2989AE8A759}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +23,10 @@ Global
 		{552D8941-E948-4E85-B2FE-69B96412440B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{552D8941-E948-4E85-B2FE-69B96412440B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{552D8941-E948-4E85-B2FE-69B96412440B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10EEF85B-58EE-4E33-8944-479B4113F377}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10EEF85B-58EE-4E33-8944-479B4113F377}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10EEF85B-58EE-4E33-8944-479B4113F377}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10EEF85B-58EE-4E33-8944-479B4113F377}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

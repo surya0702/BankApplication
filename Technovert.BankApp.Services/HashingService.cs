@@ -9,14 +9,38 @@ namespace Technovert.BankApp.Services
 {
     public class HashingService
     {
-        public string GetSha1(string value)
+        public DateTime today = DateTime.Today;
+
+        public string AccountIdGenerator(string AccountHolderName) // Generates a account id for newly created account
+        {
+            return AccountHolderName.Substring(0, 3).ToUpper() + today.ToString("dd") + today.ToString("MM") + today.ToString("yyyy") + DateTime.Now.ToString("HH") + DateTime.Now.ToString("mm");
+        }
+
+        public void InputValidator(params Object[] inputs) // Validates the user input
+        {
+            foreach (var input in inputs)
+            {
+                if (input == null)
+                {
+                    throw new Exception("Invalid Input!");
+                }
+            }
+        }
+        public string GetHash(string value)
         {
             var data = Encoding.ASCII.GetBytes(value);
             var hashData = new SHA1Managed().ComputeHash(data);
             var hash = string.Empty;
+            int counter = 0;
             foreach (var b in hashData)
             {
+                if (counter == 4)
+                {
+                    hash += "-";
+                    counter = 0;
+                }
                 hash += b.ToString("X2");
+                counter += 1;
             }
             return hash;
         }

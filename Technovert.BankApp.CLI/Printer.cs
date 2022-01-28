@@ -20,7 +20,7 @@ namespace Technovert.BankApp
         }
 
         // Prints the Transactions in the form of a table in console.
-        public string TablePrinter(List<Transaction> transactions,bool revert=false)
+        public string TablePrinter(List<Transactions> transactions,bool revert=false)
         {
             List<string> transactionToBeRevert = new List<string>();
             int index = 1;

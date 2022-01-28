@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Technovert.BankApp.Models.Enums
+namespace Technovert.BankApp.Services
 {
-    public enum GenderType
+    public class AppSettings
     {
-        Male,
-        Female,
-        Others
+        public string Secret { get; set; }
     }
 }

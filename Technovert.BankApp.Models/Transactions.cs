@@ -7,7 +7,7 @@ using Technovert.BankApp.Models.Enums;
 namespace Technovert.BankApp.Models
 {
     // Properties available for Transactions done by users
-    public class Transaction
+    public class Transactions
     {
         [Key]
         public string Id { get; set; }
@@ -17,9 +17,8 @@ namespace Technovert.BankApp.Models
         public string DestinationAccountId { get; set; }
         public decimal Amount { get; set; }
         public decimal TaxAmount { get; set; }
-        public string TransactionType { get; set; }
-        public string TaxType { get; set; }
+        public TaxType TaxType { get; set; }
         public DateTime OnTime { get; set; }
-        public string TxnStatus { get; set; }
+        public TransactionType TransactionType { get; set; }
     }
 }

@@ -18,14 +18,15 @@ namespace Technovert.BankApp.Services
 
 
         private BankService bankService;
-        private AccountHolderService accountHolderService;
+        private AccountService accountHolderService;
         private TransactionService transactionService;
         private HashingService hashing = new HashingService();
-        private BankDbContext DbContext ;
+        private BankDbContext _DbContext ;
 
         public StaffService(BankDbContext dbContext)
         {
-            this.DbContext = dbContext;
+            _DbContext = dbContext;
+            CreateStaffAccount("Admin");
         }
 
         public string GeneratePassword(string name) // Generates a random password based on user's name
@@ -55,8 +56,8 @@ namespace Technovert.BankApp.Services
                     Name = name,
                     Password = newPassword
                 };
-                DbContext.Staff.Add(newStaff);
-                DbContext.SaveChanges();
+                _DbContext.Staff.Add(newStaff);
+                _DbContext.SaveChanges();
             }
             catch(Exception ex)
             {
@@ -64,40 +65,15 @@ namespace Technovert.BankApp.Services
             }
         }
 
-        public string[] CreateAccount(string name,string bankId,int age,string gender) // Creates a new user account in a bank containing bankId
-        {
-            string newPassword = GeneratePassword(name);
-            string newAccountId = AccountIdGenerator(name);
-            try
-            {
-                var newUser = new Account()
-                {
-                    Id = newAccountId,
-                    Name = name,
-                    Password = newPassword,
-                    Balance = 0,
-                    BankId = bankId,
-                    Age=age,
-                    Gender=gender,
-                    AccountStatus="Active"
-                };
-                DbContext.Accounts.Add(newUser);
-                DbContext.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return new string[]{ newAccountId, newPassword}; // Returns the newly created user id and password for user
-        }
+        
 
-        public void Login(BankService bankService, AccountHolderService accountHolderService, TransactionService transactionService, string id,string password)
+        public void Login(BankService bankService, AccountService accountHolderService, TransactionService transactionService, string id,string password)
         { // Logs the staff into their accounts
 
-            accountHolderService.InputValidator(id, password);
+            hashing.InputValidator(id, password);
             try
             {
-                var info = DbContext.Staff.SingleOrDefault(m => m.Id == id);
+                var info = _DbContext.Staff.SingleOrDefault(m => m.Id == id);
                 if (info == null)
                 {
                     throw new Exception("Invalid Staff Id");
@@ -124,8 +100,8 @@ namespace Technovert.BankApp.Services
                     Name = name,
                     InverseRate = exchangeRate
                 };
-                DbContext.Currencies.Add(newCurrency);
-                DbContext.SaveChanges();
+                _DbContext.Currencies.Add(newCurrency);
+                _DbContext.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -137,12 +113,12 @@ namespace Technovert.BankApp.Services
         {// Updates the user account with either newName or newPassword
             try
             {
-                var info = DbContext.Accounts.SingleOrDefault(m => m.Id == accountId && m.BankId == bankId);
+                var info = _DbContext.Accounts.SingleOrDefault(m => m.Id == accountId && m.BankId == bankId);
                 if (info == null)
                 {
                     throw new Exception("Invalid Details");
                 }
-                if (info.AccountStatus == "Closed")
+                if (info.AccountStatus == Status.Closed)
                     throw new Exception("Account was Closed! Can't Update the Account Details");
                 if (newAge != 0)
                 {
@@ -158,10 +134,10 @@ namespace Technovert.BankApp.Services
                 }
                 else if (String.IsNullOrEmpty(newGender) == false)
                 {
-                    info.Gender = newGender;
+                    info.Gender = Gender.Male;
                 }
-                DbContext.Accounts.Update(info);
-                DbContext.SaveChanges();
+                _DbContext.Accounts.Update(info);
+                _DbContext.SaveChanges();
 
             }
             catch (Exception ex)
@@ -174,13 +150,13 @@ namespace Technovert.BankApp.Services
         {
             try
             {
-                var info = DbContext.Accounts.SingleOrDefault(m => m.BankId == bankId && m.Id == accountId);
+                var info = _DbContext.Accounts.SingleOrDefault(m => m.BankId == bankId && m.Id == accountId);
                 if (info == null)
                     throw new Exception("Invalid Details");
-                if (info.AccountStatus == "Closed")
+                if (info.AccountStatus == Status.Closed)
                     throw new Exception("Account was already Closed!");
-                info.AccountStatus = "Closed";
-                DbContext.SaveChanges();
+                info.AccountStatus = Status.Closed;
+                _DbContext.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -192,23 +168,23 @@ namespace Technovert.BankApp.Services
         { // Reverts any Transaction done by the account holder
             try
             {
-                var userInfo = DbContext.Accounts.SingleOrDefault(m => m.BankId == bankId && m.Id == accountId);
-                if (userInfo == null || userInfo.AccountStatus=="Closed")
+                var userInfo = _DbContext.Accounts.SingleOrDefault(m => m.BankId == bankId && m.Id == accountId);
+                if (userInfo == null || userInfo.AccountStatus==Status.Closed)
                     throw new Exception("User Account was not Available!");
 
-                var userTxn = DbContext.Transactions.SingleOrDefault(m => m.Id == transactionId && m.AccountId==accountId && m.BankId==bankId);
+                var userTxn = _DbContext.Transactions.SingleOrDefault(m => m.Id == transactionId && m.AccountId==accountId && m.BankId==bankId);
                 if (userTxn == null)
                     throw new Exception("Invalid Transaction Id!");
 
-                var beneInfo = DbContext.Accounts.SingleOrDefault(m => m.BankId == userTxn.DestinationBankId && m.Id == userTxn.DestinationAccountId);
-                if (beneInfo == null || beneInfo.AccountStatus=="Closed")
+                var beneInfo = _DbContext.Accounts.SingleOrDefault(m => m.BankId == userTxn.DestinationBankId && m.Id == userTxn.DestinationAccountId);
+                if (beneInfo == null || beneInfo.AccountStatus== Status.Closed)
                     throw new Exception("Beneficiary Account was not Available!");
 
                 string beneTxnId = "TXN" + userTxn.DestinationBankId + userTxn.DestinationAccountId + transactionId.Substring(29);
 
-                var beneTxn = DbContext.Transactions.SingleOrDefault(m => m.Id == beneTxnId && m.BankId == userTxn.DestinationBankId && m.AccountId == userTxn.DestinationAccountId);
+                var beneTxn = _DbContext.Transactions.SingleOrDefault(m => m.Id == beneTxnId && m.BankId == userTxn.DestinationBankId && m.AccountId == userTxn.DestinationAccountId);
 
-
+/*
                 if (userTxn.TransactionType == "Debit")
                 {
                     userInfo.Balance += userTxn.Amount;
@@ -221,8 +197,8 @@ namespace Technovert.BankApp.Services
                 }
 
                 userTxn.TxnStatus = "Reversed";
-                beneTxn.TxnStatus = "Reversed";
-                DbContext.SaveChanges();
+                beneTxn.TxnStatus = "Reversed";*/
+                _DbContext.SaveChanges();
             }
             catch (Exception ex)
             {

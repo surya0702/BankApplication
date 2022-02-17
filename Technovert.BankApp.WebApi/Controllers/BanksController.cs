@@ -35,14 +35,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             return Ok(bankService.GetAllBanks());
         }
 
-        [AllowAnonymous]
-        [HttpGet("{id}")]
-        public IActionResult Get(string id)
-        {
-            return Ok(bankService.GetBank(id));
-        }
-
-        [Authorize(Roles =Roles.Admin)]
+        [Authorize(Roles ="Staff")]
         [HttpPost]
         public IActionResult Post(BankDTO bank)
         {
@@ -54,7 +47,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             return Ok(bankService.CreateBank(newBank));
         }
 
-        [Authorize(Roles=Roles.Admin)]
+        [Authorize(Roles="Staff")]
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {

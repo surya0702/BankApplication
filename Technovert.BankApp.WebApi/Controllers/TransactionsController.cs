@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace Technovert.BankApp.WebApi.Controllers
 {
     [ApiController]
-    [Authorize]
+    [Authorize(Roles ="User")]
     [Route("api/[controller]")]
     public class TransactionsController : ControllerBase
     {
@@ -31,6 +31,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             this.accountService = accountService;
         }
 
+        [Authorize(Roles ="User")]
         [HttpGet("{bankId}/{accountId}")]
         public IActionResult Get(string bankId,string accountId)
         {
@@ -47,6 +48,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             return Ok(transactionsDTO);
         }
 
+        [Authorize(Roles = "User")]
         [HttpGet("{transactionId}")]
         public IActionResult Get(string transactionId)
         {
@@ -57,6 +59,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             return Ok(transactionDTO);
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost("{bankId}/{accountId}")]
         public IActionResult Post(string bankId, string accountId, CreateTransactionDTO transactionDTO)
         {
@@ -118,6 +121,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("Deposit/{bankId}/{accountId}")]
         public IActionResult Deposit(string bankId,string accountId,decimal amount)
         {
@@ -132,6 +136,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("Withdraw/{bankId}/{accountId}")]
         public IActionResult Withdraw(string bankId,string accountId,decimal amount)
         {

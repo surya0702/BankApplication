@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using Technovert.BankApp.Services;
 using Technovert.BankApp.Services.Interfaces;
@@ -40,7 +41,7 @@ namespace Technovert.BankApp.WebApi
 
             services.AddDbContext<BankDbContext>(p => p.UseSqlServer("Data Source=.;Initial Catalog=BankAppDB;Integrated Security=True"));
 
-            services.AddAuthentication(options =>
+            /*services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
@@ -60,7 +61,7 @@ namespace Technovert.BankApp.WebApi
                     ValidIssuer = Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
-            });
+            });*/
 
 
             services.AddScoped<IBankService, BankService>();
@@ -69,8 +70,29 @@ namespace Technovert.BankApp.WebApi
             services.AddScoped<ITransactionService, TransactionService>();
 
             services.AddControllers();
-
-            services.AddSwaggerGen(swagger =>
+            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BankApp.api", Version = "v1" });
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.OperationFilter<SecurityRequirementsOperationFilter>();
+            });
+            /*services.AddSwaggerGen(swagger =>
             {
                 //This is to generate the Default UI of Swagger Documentation    
                 swagger.SwaggerDoc("v1", new OpenApiInfo
@@ -104,7 +126,7 @@ namespace Technovert.BankApp.WebApi
 
                     }
                 });
-            });
+            });*/
 
         }
 

@@ -9,6 +9,7 @@ namespace Technovert.BankApp.Services.Interfaces
 {
     public interface IAccountService
     {
+        public string CreateToken(Account account);
         public string Authenticate(string bankId,string id,string password);
         public Account CreateAccount(Account account);
         public Account UpdateAccount(Account account);

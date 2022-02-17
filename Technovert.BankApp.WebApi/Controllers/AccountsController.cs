@@ -46,7 +46,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles =Roles.Admin)]
+        [Authorize(Roles ="Staff")]
         [HttpGet("{bankId}")]
         public IActionResult Get(string bankId)
         {
@@ -78,7 +78,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles =Roles.Admin)]
+        [Authorize(Roles ="Staff")]
         [HttpPost("{bankId}")]
         public IActionResult Post(string bankId,PostAccountDTO newAccountDTO)
         {
@@ -93,7 +93,8 @@ namespace Technovert.BankApp.WebApi.Controllers
                 acc.Id = Guid.NewGuid().ToString();
                 acc.BankId = bankId;
                 var newAcc=accountService.CreateAccount(acc);
-                return Ok(newAcc);
+                var token = accountService.CreateToken(newAcc);
+                return Ok(token);
             }
             catch(Exception ex)
             {
@@ -102,7 +103,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles ="Staff")]
         [HttpPut("{bankId}/{id}")]
         public IActionResult Put(string bankId,string id,PutAccountDTO accountDTO)
         {
@@ -125,7 +126,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles =Roles.Admin)]
+        [Authorize(Roles ="Staff")]
         [HttpDelete("{bankId}/{id}")]
         public IActionResult Delete(string bankId, string id)
         {
@@ -140,7 +141,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles ="User")]
         [HttpGet("balance/{bankId}/{id}")]
         public IActionResult GetBalance(string bankId,string id)
         {
@@ -157,7 +158,7 @@ namespace Technovert.BankApp.WebApi.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles="Staff")]
         [HttpPut("balance/{bankId}/{id}")]
         public IActionResult PutBalance(string bankId,string id,BalanceDTO balanceDTO)
         {

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
 
 namespace Technovert.BankApp.Services
 {
@@ -19,13 +20,32 @@ namespace Technovert.BankApp.Services
         private HashingService hashing = new HashingService();
         private BankDbContext _DbContext;
         private readonly AppSettings _appSettings;
+        private IConfiguration configuration;
 
-        public AccountService(BankDbContext dbContext,IOptions<AppSettings> appSettings)
+        public AccountService(BankDbContext dbContext,IOptions<AppSettings> appSettings,IConfiguration configuration)
         {
             _DbContext = dbContext;
             _appSettings = appSettings.Value;
+            this.configuration = configuration;
         }
-        
+        public string CreateToken(Account account)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name,account.Name),
+                new Claim(ClaimTypes.Role,"User")
+            };
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration.GetSection("AppSettings:Token").Value));
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var token = new JwtSecurityToken
+            (
+                claims: claims,
+                signingCredentials: cred,
+                expires: DateTime.Now.AddDays(1));
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
+        }
+
         public string Authenticate(string bankId,string id,string password) // Logs the user into his account by checking with the available id and password
         {
             hashing.InputValidator(bankId,id,password);
@@ -37,22 +57,7 @@ namespace Technovert.BankApp.Services
                 string currPassword = hashing.GetHash(password);
                 if (info.Password != currPassword)
                     throw new Exception("Invalid Password");
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new Claim[]
-                    {
-                        new Claim(ClaimTypes.Name, info.Id),
-                        new Claim(ClaimTypes.Role, info.Role)
-                    }),
-                    Expires = DateTime.Now.AddHours(1),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-                };
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-
-                return tokenHandler.WriteToken(token);
+                return CreateToken(info);
             }
             catch(Exception ex)
             {
